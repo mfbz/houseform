@@ -21,7 +21,7 @@ export const Application = function Application({ children }: React.PropsWithChi
 
 	return (
 		<Layout style={{ minHeight: '100vh' }}>
-			<Layout style={{ minHeight: '100vh' }}>
+			<Layout style={{ minHeight: '100vh', width: '80%', margin: '0 auto' }}>
 				<Layout.Header
 					style={{
 						height: 64,
