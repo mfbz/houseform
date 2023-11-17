@@ -1,20 +1,15 @@
 'use client';
 
-import { createWeb3Modal } from '@web3modal/wagmi/react';
 import React from 'react';
 import { WagmiConfig, configureChains, createConfig } from 'wagmi';
 import { Chain } from 'wagmi/chains';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { publicProvider } from 'wagmi/providers/public';
 
 // https://github.com/klaytn/awesome-klaytn
 // https://wagmi.sh/react/getting-started
 // https://wagmi.sh/examples/connect-wallet
 // https://docs.walletconnect.com/web3modal/nextjs/about
-
-// Use walletconnect project id
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
 
 // Custom klaytn testnet
 const klaytnTestnet = {
@@ -42,21 +37,10 @@ const { chains, publicClient, webSocketPublicClient } = configureChains([klaytnT
 // Set up wagmi config
 const wagmiConfig = createConfig({
 	autoConnect: true,
-	connectors: [
-		new MetaMaskConnector({ chains }),
-		new WalletConnectConnector({
-			chains,
-			options: {
-				projectId: projectId,
-			},
-		}),
-	],
+	connectors: [new MetaMaskConnector({ chains })],
 	publicClient,
 	webSocketPublicClient,
 });
-
-// Create web3 modal
-createWeb3Modal({ wagmiConfig, projectId, chains });
 
 export const WagmiProvider = function WagmiProvider({ children }: React.PropsWithChildren) {
 	return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;

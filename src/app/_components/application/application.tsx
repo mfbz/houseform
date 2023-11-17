@@ -1,18 +1,23 @@
 'use client';
 
-import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { Button, Layout, theme as ThemeManager } from 'antd';
-import React from 'react';
-import { useAccount } from 'wagmi';
+import { Button, Layout, theme as ThemeManager, Typography } from 'antd';
+import React, { useMemo } from 'react';
+import { useAccount, useConnect } from 'wagmi';
+import Icon from '@ant-design/icons';
+import { HiOutlineUser } from 'react-icons/hi';
 
 export const Application = function Application({ children }: React.PropsWithChildren) {
 	// Antd design token
 	const { token } = ThemeManager.useToken();
 
 	// Wagmi account data
-	const { address, isConnecting, isDisconnected } = useAccount();
-	// Web3 modal hook
-	const { open } = useWeb3Modal();
+	const { address, isConnecting, isConnected, isDisconnected } = useAccount();
+	const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
+
+	// NB: Only use metamask that is 0 in connectors array
+	const connector = useMemo(() => {
+		return connectors[0];
+	}, [connectors]);
 
 	return (
 		<Layout style={{ minHeight: '100vh' }}>
@@ -33,7 +38,15 @@ export const Application = function Application({ children }: React.PropsWithChi
 					</div>
 
 					<div>
-						<Button onClick={() => open()}>{'Connect wallet'}</Button>
+						{isDisconnected ? (
+							<Button disabled={!connector.ready} onClick={() => connect({ connector })}>
+								{'Connect wallet'}
+							</Button>
+						) : (
+							<Button icon={<Icon component={() => <HiOutlineUser />} />} onClick={() => console.log('pressed')}>
+								{address?.slice(0, 4) + '...' + address?.slice(-3, address.length)}
+							</Button>
+						)}
 					</div>
 				</Layout.Header>
 
