@@ -14,7 +14,7 @@ import { publicProvider } from 'wagmi/providers/public';
 // https://docs.walletconnect.com/web3modal/nextjs/about
 
 // Use walletconnect project id
-const projectId = 'TODO_YOUR_PROJECT_ID';
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
 
 // Custom klaytn testnet
 const klaytnTestnet = {
