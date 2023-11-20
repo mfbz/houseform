@@ -6,7 +6,9 @@
 		"web:build": "next build",
 		"web:start": "next start",
 		"web:lint": "next lint",
-		"contracts:compile": "hardhat compile"
+		"contracts:compile": "hardhat compile",
+		"contracts:deploy": "hardhat run scripts/deploy.js --network baobab",
+		"contracts:read": "hardhat run scripts/read.js --network baobab"
 	},
 	"dependencies": {
 		"@ant-design/cssinjs": "^1.18.0-alpha.0",
