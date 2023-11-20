@@ -9,6 +9,9 @@ import './HouseformShare.sol';
 contract HouseformManager is Ownable, ReentrancyGuard {
 	struct Project {
 		address payable builder;
+		string name;
+		string description;
+		string image;
 		uint currentAmount;
 		uint goalAmount;
 		uint saleAmount; // Amount at which the project is sold
@@ -30,6 +33,9 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 
 	event ProjectCreated(
 		uint projectId,
+		string name,
+		string description,
+		string image,
 		uint goalAmount,
 		uint expectedProfit,
 		uint builderShares,
@@ -100,6 +106,9 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 
 	function createProject(
 		uint _goalAmount,
+		string memory _name,
+		string memory _description,
+		string memory _image,
 		uint _builderShares,
 		uint _totalShares,
 		uint _expectedProfit,
@@ -117,6 +126,9 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		projects.push(
 			Project({
 				builder: payable(msg.sender),
+				name: _name,
+				description: _description,
+				image: _image,
 				currentAmount: 0,
 				goalAmount: _goalAmount,
 				saleAmount: 0,
@@ -140,7 +152,17 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		shareContract.mint(msg.sender, id, _builderShares, '');
 
 		// Emit event
-		emit ProjectCreated(id, _goalAmount, _expectedProfit, _builderShares, _totalShares, _fundraisingDeadline);
+		emit ProjectCreated(
+			id,
+			_name,
+			_description,
+			_image,
+			_goalAmount,
+			_expectedProfit,
+			_builderShares,
+			_totalShares,
+			_fundraisingDeadline
+		);
 	}
 
 	function startBuilding(

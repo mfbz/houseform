@@ -3,8 +3,10 @@
 import Icon from '@ant-design/icons';
 import { Button, Layout, theme as ThemeManager } from 'antd';
 import React, { useMemo } from 'react';
-import { HiOutlineUser } from 'react-icons/hi';
+import { HiOutlineUser, HiOutlinePlusCircle } from 'react-icons/hi';
+
 import { useAccount, useConnect } from 'wagmi';
+import { CreateButton } from './components/create-button';
 
 export const Application = function Application({ children }: React.PropsWithChildren) {
 	// Antd design token
@@ -37,15 +39,21 @@ export const Application = function Application({ children }: React.PropsWithChi
 						<img src={'./houseform-logo.png'} height={32} alt={'houseform logo'}></img>
 					</div>
 
-					<div>
+					<div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
 						{isDisconnected ? (
-							<Button disabled={!connector.ready} onClick={() => connect({ connector })}>
-								{'Connect wallet'}
-							</Button>
+							<>
+								<Button disabled={!connector.ready} onClick={() => connect({ connector })}>
+									{'Connect wallet'}
+								</Button>
+							</>
 						) : (
-							<Button icon={<Icon component={() => <HiOutlineUser />} />} onClick={() => console.log('pressed')}>
-								{address?.slice(0, 4) + '...' + address?.slice(-3, address.length)}
-							</Button>
+							<>
+								<CreateButton style={{ marginRight: token.margin }} />
+
+								<Button icon={<Icon component={() => <HiOutlineUser />} />} onClick={() => console.log('pressed')}>
+									{''}
+								</Button>
+							</>
 						)}
 					</div>
 				</Layout.Header>
