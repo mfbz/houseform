@@ -1,10 +1,10 @@
 'use client';
 
-import { Button, Layout, theme as ThemeManager, Typography } from 'antd';
-import React, { useMemo } from 'react';
-import { useAccount, useConnect } from 'wagmi';
 import Icon from '@ant-design/icons';
+import { Button, Layout, theme as ThemeManager } from 'antd';
+import React, { useMemo } from 'react';
 import { HiOutlineUser } from 'react-icons/hi';
+import { useAccount, useConnect } from 'wagmi';
 
 export const Application = function Application({ children }: React.PropsWithChildren) {
 	// Antd design token

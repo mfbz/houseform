@@ -43,5 +43,10 @@ const wagmiConfig = createConfig({
 });
 
 export const WagmiProvider = function WagmiProvider({ children }: React.PropsWithChildren) {
-	return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
+	// Prevent nextjs 13 hydratation problem
+	// https://github.com/wagmi-dev/create-wagmi/blob/main/templates/next/default/src/app/providers.tsx
+	const [mounted, setMounted] = React.useState(false);
+	React.useEffect(() => setMounted(true), []);
+
+	return <WagmiConfig config={wagmiConfig}>{mounted && children}</WagmiConfig>;
 };

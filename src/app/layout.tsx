@@ -3,10 +3,10 @@ import { App as AntdWrapper, ConfigProvider } from 'antd';
 import type { Metadata } from 'next';
 import { AntdRegistry } from './_components/antd-registry';
 import { Application } from './_components/application';
+import { WagmiProvider } from './_components/wagmi-provider';
 
 // Load global css
 import '@/styles/global.css';
-import { WagmiProvider } from './_components/wagmi-provider';
 
 // Main app metadata
 export const metadata: Metadata = {
