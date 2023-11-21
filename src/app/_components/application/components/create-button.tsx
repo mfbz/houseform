@@ -1,7 +1,7 @@
 import Icon from '@ant-design/icons';
 import { Button, Card, DatePicker, Form, Input, InputNumber, Modal, Result, Spin, theme as ThemeManager } from 'antd';
 import Link from 'next/link';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	HiOutlinePlusCircle,
 	HiOutlineExclamation,
@@ -10,6 +10,9 @@ import {
 	HiOutlineX,
 	HiOutlinePhotograph,
 } from 'react-icons/hi';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { KlaytnConstants } from '../../../../constants/klaytn';
+import { useDebounce } from 'usehooks-ts';
 
 const RESULT_ICON_SIZE = 64;
 
@@ -21,28 +24,100 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 	const showModal = useCallback(() => setModalOpen(true), []);
 	const hideModal = useCallback(() => setModalOpen(false), []);
 
+	// Form reference
 	const [form] = Form.useForm();
-	const [image, setImage] = useState('');
-	const [submitLoading, setSubmitLoading] = useState(false);
-	const [submitSuccess, setSubmitSuccess] = useState(false);
-	const [submitError, setSubmitError] = useState(false);
-	const [projectCreated, setProjectCreated] = useState<any | null>(null);
+	// Current project data
+	const [project, setProject] = useState<any>({
+		name: '',
+		description: '',
+		image: '',
+		goalAmount: 0,
+		expectedProfit: 0,
+		builderShares: 0,
+		totalShares: 0,
+		fundraisingDeadline: 0,
+	});
+	// Debounce it to avoid spamming public endpoint
+	const debouncedProject = useDebounce(project, 500);
+	// https://wagmi.sh/examples/contract-write-dynamic
+	const { config } = usePrepareContractWrite({
+		address: KlaytnConstants.NETWORK_DATA.contracts.HouseformManager.address as any,
+		abi: [
+			{
+				inputs: [
+					{
+						internalType: 'string',
+						name: '_name',
+						type: 'string',
+					},
+					{
+						internalType: 'string',
+						name: '_description',
+						type: 'string',
+					},
+					{
+						internalType: 'string',
+						name: '_image',
+						type: 'string',
+					},
+					{
+						internalType: 'uint256',
+						name: '_goalAmount',
+						type: 'uint256',
+					},
+					{
+						internalType: 'uint256',
+						name: '_expectedProfit',
+						type: 'uint256',
+					},
+					{
+						internalType: 'uint256',
+						name: '_builderShares',
+						type: 'uint256',
+					},
+					{
+						internalType: 'uint256',
+						name: '_totalShares',
+						type: 'uint256',
+					},
+					{
+						internalType: 'uint256',
+						name: '_fundraisingDeadline',
+						type: 'uint256',
+					},
+				],
+				name: 'createProject',
+				outputs: [],
+				stateMutability: 'nonpayable',
+				type: 'function',
+			},
+		],
+		functionName: 'createProject',
+		args: [
+			debouncedProject.name,
+			debouncedProject.description,
+			debouncedProject.image,
+			debouncedProject.goalAmount,
+			debouncedProject.expectedProfit,
+			debouncedProject.builderShares,
+			debouncedProject.totalShares,
+			debouncedProject.fundraisingDeadline,
+		],
+	});
+	const { data, write } = useContractWrite(config);
+	const { isLoading, isSuccess, isError } = useWaitForTransaction({ hash: data?.hash });
 
-	const handleSubmit = useCallback(async (values: any) => {
-		// TODO
-	}, []);
-
-	const clearSubmit = useCallback(() => {
-		setSubmitLoading(false);
-		setSubmitSuccess(false);
-		setSubmitError(false);
-		setProjectCreated(null);
-	}, []);
+	// Handle project create submission
+	const handleSubmit = useCallback(
+		async (values: any) => {
+			write?.();
+		},
+		[write],
+	);
 
 	const clearModal = useCallback(() => {
-		clearSubmit();
 		form.resetFields();
-	}, [form, clearSubmit]);
+	}, [form]);
 
 	return (
 		<>
@@ -60,19 +135,21 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 				open={modalOpen}
 				footer={null}
 				closeIcon={<Icon component={() => <HiOutlineX />} />}
-				onCancel={submitLoading ? undefined : hideModal}
+				onCancel={isLoading ? undefined : hideModal}
 				width={'60%'}
 				centered={true}
-				maskClosable={!submitLoading}
+				maskClosable={!isLoading}
 				afterClose={clearModal}
 				style={{ padding: token.paddingLG }}
 			>
-				{!submitLoading && !submitSuccess && !submitError && (
+				{!isLoading && !isSuccess && !isError && (
 					<Form
 						form={form}
 						layout={'vertical'}
 						onFinish={handleSubmit}
-						onValuesChange={(changedValues, values) => setImage(values.image || '')}
+						onValuesChange={(changedValues, values) =>
+							setProject((_project: any) => ({ ..._project, ...changedValues }))
+						}
 						style={{ width: '100%', marginTop: token.margin }}
 					>
 						<div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -87,9 +164,9 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 							>
 								<Card
 									cover={
-										image ? (
+										project.image ? (
 											<img
-												src={image}
+												src={project.image}
 												alt={'project image'}
 												style={{ width: '100%', height: 300, objectFit: 'cover', borderRadius: 16 }}
 											/>
@@ -203,7 +280,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 							<div></div>
 
 							<Form.Item style={{ padding: 0, margin: 0 }}>
-								<Button type={'primary'} htmlType={'submit'}>
+								<Button type={'primary'} htmlType={'submit'} disabled={!write}>
 									{'Create'}
 								</Button>
 							</Form.Item>
@@ -211,7 +288,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 					</Form>
 				)}
 
-				{submitLoading && (
+				{isLoading && (
 					<Result
 						icon={
 							<Spin
@@ -228,7 +305,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 					/>
 				)}
 
-				{submitSuccess && (
+				{isSuccess && (
 					<Result
 						icon={
 							<Icon
@@ -237,20 +314,10 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 							/>
 						}
 						title={'Your project has been created'}
-						extra={[
-							<Link key={'view'} href={'/projects/' + projectCreated?.id}>
-								<Button type={'primary'} onClick={hideModal}>
-									{'View'}
-								</Button>
-							</Link>,
-							<Button key={'continue'} onClick={hideModal}>
-								{'Continue browsing'}
-							</Button>,
-						]}
 					/>
 				)}
 
-				{submitError && (
+				{isError && (
 					<Result
 						icon={
 							<Icon
@@ -259,14 +326,6 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 							/>
 						}
 						title={'An error occurred while creating your project'}
-						extra={[
-							<Button key={'again'} type={'primary'} onClick={clearSubmit}>
-								{'Try again'}
-							</Button>,
-							<Button key={'continue'} onClick={hideModal}>
-								{'Continue browsing'}
-							</Button>,
-						]}
 					/>
 				)}
 			</Modal>

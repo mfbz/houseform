@@ -14,10 +14,10 @@ export const NETWORK_DATA_MAP = {
 	testnet: {
 		contracts: {
 			HouseformManager: {
-				address: '0x3a5CC2Be65e56d896f0D3adf427474c33239a1F9',
+				address: '0x0d4eF3419af9a0FEE9cc7dBE3EAC4156399f457C',
 			},
 			HouseformShare: {
-				address: '0x873340073b531a2f76b8c0e7567a434f762eae31',
+				address: '0x3ea99bEa8d5D1Cf76aF585ba207147C653297853',
 			},
 		},
 	},

@@ -9,9 +9,6 @@ import './HouseformShare.sol';
 contract HouseformManager is Ownable, ReentrancyGuard {
 	struct Project {
 		address payable builder;
-		string name;
-		string description;
-		string image;
 		uint currentAmount;
 		uint goalAmount;
 		uint saleAmount; // Amount at which the project is sold
@@ -32,21 +29,21 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 	mapping(address => uint) builderProjectCount;
 
 	event ProjectCreated(
-		uint projectId,
-		string name,
-		string description,
-		string image,
-		uint goalAmount,
-		uint expectedProfit,
-		uint builderShares,
-		uint totalShares,
-		uint fundraisingDeadline
+		uint _projectId,
+		string _name,
+		string _description,
+		string _image,
+		uint _goalAmount,
+		uint _expectedProfit,
+		uint _builderShares,
+		uint _totalShares,
+		uint _fundraisingDeadline
 	);
-	event BuildingStarted(uint projectId, uint buildingStartedOn);
-	event BuildingCompleted(uint projectId, uint buildingCompletedOn, uint saleAmount);
-	event SharesBought(address account, uint projectId, uint shares);
-	event SharesRedeemed(address account, uint projectId, uint shares);
-	event FundraisingCompleted(uint projectId, uint fundraisingCompletedOn);
+	event BuildingStarted(uint _projectId, uint _buildingStartedOn);
+	event BuildingCompleted(uint _projectId, uint _buildingCompletedOn, uint _saleAmount);
+	event SharesBought(address _account, uint _projectId, uint _shares);
+	event SharesRedeemed(address _account, uint _projectId, uint _shares);
+	event FundraisingCompleted(uint _projectId, uint _fundraisingCompletedOn);
 
 	modifier projectExists(uint _projectId) {
 		// NB: project ids are incremental indexes of projects array
@@ -105,13 +102,13 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 	}
 
 	function createProject(
-		uint _goalAmount,
 		string memory _name,
 		string memory _description,
 		string memory _image,
+		uint _goalAmount,
+		uint _expectedProfit,
 		uint _builderShares,
 		uint _totalShares,
-		uint _expectedProfit,
 		uint _fundraisingDeadline
 	) external nonReentrant {
 		// Validate inputs
@@ -126,9 +123,6 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		projects.push(
 			Project({
 				builder: payable(msg.sender),
-				name: _name,
-				description: _description,
-				image: _image,
 				currentAmount: 0,
 				goalAmount: _goalAmount,
 				saleAmount: 0,
@@ -148,6 +142,8 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		projectToBuilder[id] = msg.sender;
 		builderProjectCount[msg.sender]++;
 
+		// Set id metadata
+		shareContract.setMetadata(id, _name, _description, _image);
 		// Mint initial shares to builder
 		shareContract.mint(msg.sender, id, _builderShares, '');
 
@@ -284,6 +280,19 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 
 		// Emit event
 		emit SharesRedeemed(msg.sender, _projectId, _shares);
+	}
+
+	function getProjects() external view returns (Project[] memory) {
+		Project[] memory projectsArray = new Project[](projects.length);
+		for (uint i = 0; i < projects.length; i++) {
+			projectsArray[i] = projects[i];
+		}
+		return projectsArray;
+	}
+
+	function getProject(uint _projectId) external view returns (Project memory) {
+		Project memory project = projects[_projectId];
+		return project;
 	}
 
 	function getShareCost(uint _projectId) public view returns (uint) {
