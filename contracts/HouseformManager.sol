@@ -116,8 +116,8 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		require(_builderShares > 0 && _builderShares < _totalShares, 'Invalid builder shares');
 		require(_totalShares > 1, 'Invalid total shares');
 		require(_expectedProfit >= 0, 'Invalid expected profit');
-		// NB: At least 7 days of deadline
-		require(_fundraisingDeadline >= block.timestamp + 7 days, 'Invalid fundraising deadline');
+		// NB: At least x days of deadline
+		require(_fundraisingDeadline >= block.timestamp + 1 days, 'Invalid fundraising deadline');
 
 		// Push new project into the array
 		projects.push(

@@ -26,7 +26,9 @@ export const Application = function Application({ children }: React.PropsWithChi
 			<Layout style={{ minHeight: '100vh', width: '80%', margin: '0 auto' }}>
 				<Layout.Header
 					style={{
-						height: 64,
+						height: 64 + token.padding,
+						paddingTop: token.padding / 2,
+						paddingBottom: token.padding / 2,
 						paddingLeft: token.paddingLG,
 						paddingRight: token.paddingLG,
 						display: 'flex',

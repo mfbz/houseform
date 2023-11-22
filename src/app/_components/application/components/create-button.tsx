@@ -1,18 +1,18 @@
 import Icon from '@ant-design/icons';
 import { Button, Card, DatePicker, Form, Input, InputNumber, Modal, Result, Spin, theme as ThemeManager } from 'antd';
-import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-	HiOutlinePlusCircle,
-	HiOutlineExclamation,
-	HiOutlineRefresh,
+	HiCubeTransparent,
 	HiOutlineCheckCircle,
-	HiOutlineX,
+	HiOutlineExclamation,
 	HiOutlinePhotograph,
+	HiOutlinePlusCircle,
+	HiOutlineX,
 } from 'react-icons/hi';
+import { useDebounce } from 'usehooks-ts';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 import { KlaytnConstants } from '../../../../constants/klaytn';
-import { useDebounce } from 'usehooks-ts';
+import { TokenUtils } from '../../../_utils/token-utils';
 
 const RESULT_ICON_SIZE = 64;
 
@@ -35,7 +35,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 		expectedProfit: 0,
 		builderShares: 0,
 		totalShares: 0,
-		fundraisingDeadline: 0,
+		fundraisingDeadline: undefined,
 	});
 	// Debounce it to avoid spamming public endpoint
 	const debouncedProject = useDebounce(project, 500);
@@ -97,15 +97,23 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 			debouncedProject.name,
 			debouncedProject.description,
 			debouncedProject.image,
-			debouncedProject.goalAmount,
+			TokenUtils.toBigInt(debouncedProject.goalAmount, 18),
 			debouncedProject.expectedProfit,
 			debouncedProject.builderShares,
 			debouncedProject.totalShares,
-			debouncedProject.fundraisingDeadline,
+			debouncedProject.fundraisingDeadline?.unix() || 0,
 		],
 	});
 	const { data, write } = useContractWrite(config);
 	const { isLoading, isSuccess, isError } = useWaitForTransaction({ hash: data?.hash });
+
+	// Close modal on success or error after short timeout
+	useEffect(() => {
+		if (isSuccess || isError) {
+			const timer = setTimeout(() => hideModal(), 3000);
+			return () => clearTimeout(timer);
+		}
+	}, [isSuccess, isError, hideModal]);
 
 	// Handle project create submission
 	const handleSubmit = useCallback(
@@ -115,6 +123,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 		[write],
 	);
 
+	// To clear modal when closed
 	const clearModal = useCallback(() => {
 		form.resetFields();
 	}, [form]);
@@ -134,7 +143,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 				title={'Create a project'}
 				open={modalOpen}
 				footer={null}
-				closeIcon={<Icon component={() => <HiOutlineX />} />}
+				closeIcon={isLoading ? null : <Icon component={() => <HiOutlineX />} />}
 				onCancel={isLoading ? undefined : hideModal}
 				width={'60%'}
 				centered={true}
@@ -265,7 +274,11 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 									style={{ width: '100%' }}
 									rules={[{ required: true, message: 'Please select project fundraising deadline' }]}
 								>
-									<DatePicker style={{ width: '100%' }} placeholder={'Fundraising deadline'} />
+									<DatePicker
+										style={{ width: '100%' }}
+										placeholder={'Fundraising deadline'}
+										disabledDate={(d) => !d || d.unix() < Date.now() / 1000 + 1 * 24 * 60 * 60}
+									/>
 								</Form.Item>
 							</div>
 						</div>
@@ -295,13 +308,14 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 								indicator={
 									<Icon
 										style={{ fontSize: RESULT_ICON_SIZE }}
-										component={(props: any) => <HiOutlineRefresh {...props} fill={'none'} />}
+										component={(props: any) => <HiCubeTransparent {...props} fill={'none'} />}
 										spin={true}
 									/>
 								}
 							/>
 						}
-						title={'Creating your project...'}
+						title={'Submitting transaction...'}
+						style={{ paddingTop: token.paddingLG, paddingBottom: token.paddingLG }}
 					/>
 				)}
 
@@ -314,6 +328,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 							/>
 						}
 						title={'Your project has been created'}
+						style={{ paddingTop: token.paddingLG, paddingBottom: token.paddingLG }}
 					/>
 				)}
 
@@ -326,6 +341,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 							/>
 						}
 						title={'An error occurred while creating your project'}
+						style={{ paddingTop: token.paddingLG, paddingBottom: token.paddingLG }}
 					/>
 				)}
 			</Modal>

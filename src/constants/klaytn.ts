@@ -2,6 +2,9 @@ export type NetworkType = 'testnet' | 'mainnet';
 
 export const NETWORK_DATA_MAP = {
 	mainnet: {
+		general: {
+			klaytnPrice: 0.15,
+		},
 		contracts: {
 			HouseformManager: {
 				address: '',
@@ -12,12 +15,15 @@ export const NETWORK_DATA_MAP = {
 		},
 	},
 	testnet: {
+		general: {
+			klaytnPrice: 0.15,
+		},
 		contracts: {
 			HouseformManager: {
-				address: '0x0d4eF3419af9a0FEE9cc7dBE3EAC4156399f457C',
+				address: '0x238a79056ADcc352D5A51AcF9293F81aC5E065D4',
 			},
 			HouseformShare: {
-				address: '0x3ea99bEa8d5D1Cf76aF585ba207147C653297853',
+				address: '0xc097DC6F457b10C7e64A78b113A1741b9081928E',
 			},
 		},
 	},
