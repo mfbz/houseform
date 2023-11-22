@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
-import { useContractRead } from 'wagmi';
+import { useContractRead, useWalletClient } from 'wagmi';
 import { getPublicClient, getWalletClient, waitForTransaction } from 'wagmi/actions';
 import { KlaytnConstants } from '../constants/klaytn';
 import { ProjectCardGrid } from './_components/project-card-grid';
@@ -140,50 +140,56 @@ export default function HomePage() {
 		}
 	}, []);
 
+	// Get wallet client to do transactions
+	const { data: walletClient } = useWalletClient();
 	// Execute share buy
-	const onBuyShares = useCallback(async (projectId: number, shares: number, amount: bigint) => {
-		try {
-			// Get connected client
-			const walletClient = await getWalletClient();
-			// Validate it exists
-			if (!walletClient) throw new Error();
+	const onBuyShares = useCallback(
+		async (projectId: number, shares: number, amount: bigint) => {
+			try {
+				// Validate it exists
+				if (!walletClient) throw new Error();
 
-			// Execute write with simulate to validate transaction
-			const { request } = await getPublicClient().simulateContract({
-				address: KlaytnConstants.NETWORK_DATA.contracts.HouseformManager.address as any,
-				abi: [
-					{
-						inputs: [
-							{
-								internalType: 'uint256',
-								name: '_projectId',
-								type: 'uint256',
-							},
-							{
-								internalType: 'uint256',
-								name: '_shares',
-								type: 'uint256',
-							},
-						],
-						name: 'buyShares',
-						outputs: [],
-						stateMutability: 'payable',
-						type: 'function',
-					},
-				],
-				functionName: 'buyShares',
-				args: [TokenUtils.toBigInt(projectId, 0), TokenUtils.toBigInt(shares, 0)],
-				value: amount,
-			});
-			// If we are here it means no error has been thrown so continue and execute the transaction
-			const hash = await walletClient.writeContract(request);
-			// Wait for transaction to be confirmed
-			const receipt = await waitForTransaction({ hash });
-			console.log(receipt);
-		} catch (error) {
-			// hehe
-		}
-	}, []);
+				// Execute write with simulate to validate transaction
+				const { request } = await getPublicClient().simulateContract({
+					account: walletClient.account.address,
+					address: KlaytnConstants.NETWORK_DATA.contracts.HouseformManager.address as any,
+					abi: [
+						{
+							inputs: [
+								{
+									internalType: 'uint256',
+									name: '_projectId',
+									type: 'uint256',
+								},
+								{
+									internalType: 'uint256',
+									name: '_shares',
+									type: 'uint256',
+								},
+							],
+							name: 'buyShares',
+							outputs: [],
+							stateMutability: 'payable',
+							type: 'function',
+						},
+					],
+					functionName: 'buyShares',
+					args: [TokenUtils.toBigInt(projectId, 0), TokenUtils.toBigInt(shares, 0)],
+					value: amount,
+				});
+
+				// If we are here it means no error has been thrown so continue and execute the transaction
+				const hash = await walletClient.writeContract(request);
+				// Wait for transaction to be confirmed
+				const receipt = await waitForTransaction({ hash });
+				console.log(receipt);
+			} catch (error) {
+				// hehe
+				console.log(error);
+			}
+		},
+		[walletClient],
+	);
 
 	return (
 		<main>

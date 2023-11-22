@@ -52,12 +52,11 @@ export const ProjectCard = function ProjectCard({
 	return (
 		<Card
 			cover={
-				<div style={{ width: '100%', padding: token.margin }}>
+				<div onClick={onClick} style={{ width: '100%', padding: token.margin, cursor: 'pointer' }}>
 					<img src={metadata?.image} width={'100%'} height={300} style={{ borderRadius: token.borderRadius }} />
 				</div>
 			}
 			bodyStyle={{ paddingTop: 0 }}
-			onClick={onClick}
 		>
 			<div style={{ display: 'flex', flexDirection: 'column' }}>
 				<Typography.Title level={5} style={{ marginTop: 0 }}>
@@ -111,7 +110,7 @@ export const ProjectCard = function ProjectCard({
 						layout={'inline'}
 						initialValues={{ shares: 1 }}
 						style={{ width: '100%' }}
-						onFinish={(values) => onBuyShares(values.shares, values.shares * shareCost)}
+						onFinish={(values) => onBuyShares(values.shares, BigInt(values.shares) * shareCost)}
 					>
 						<div style={{ width: '100%', display: 'flex' }}>
 							<div style={{}}>

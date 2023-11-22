@@ -15,7 +15,7 @@ async function main() {
 	console.log(`Share contract symbol: ${await shareContract.symbol()}`);
 
 	console.log(`Projects: ${await managerContract.getProjects()}`);
-	//console.log(`Project metadata: ${await shareContract.uri(0)}`);
+	console.log(`Share cost: ${await managerContract.getShareCost(0)}`);
 
 	console.log(
 		`Balance of project #0 shares: ${await shareContract.balanceOf('0x93840623bc378e9ee5334c0eE4608CF877dC68D3', 0)}`,
