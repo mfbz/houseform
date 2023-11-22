@@ -4,6 +4,7 @@ export interface Project {
 	goalAmount: bigint;
 	saleAmount: bigint;
 	expectedProfit: number;
+	builderFee: number;
 	currentShares: number;
 	totalShares: number;
 	fundraisingDeadline: number;

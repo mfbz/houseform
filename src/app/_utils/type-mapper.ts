@@ -9,6 +9,7 @@ export class TypeMapper {
 			goalAmount: item.goalAmount,
 			saleAmount: item.saleAmount,
 			expectedProfit: TokenUtils.toNumber(item.expectedProfit, 0),
+			builderFee: TokenUtils.toNumber(item.builderFee, 0),
 			currentShares: TokenUtils.toNumber(item.currentShares, 0),
 			totalShares: TokenUtils.toNumber(item.totalShares, 0),
 			fundraisingDeadline: TokenUtils.toNumber(item.fundraisingDeadline, 0),

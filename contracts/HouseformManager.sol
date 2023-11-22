@@ -13,6 +13,7 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		uint goalAmount;
 		uint saleAmount; // Amount at which the project is sold
 		uint expectedProfit; // Expected profit for investors
+		uint builderFee; // The percentage of the profit for the builder
 		uint currentShares;
 		uint totalShares;
 		uint fundraisingDeadline; // Deadline timestamp for reaching the fundraising goal
@@ -35,7 +36,7 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		string _image,
 		uint _goalAmount,
 		uint _expectedProfit,
-		uint _builderShares,
+		uint _builderFee,
 		uint _totalShares,
 		uint _fundraisingDeadline
 	);
@@ -43,6 +44,7 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 	event BuildingCompleted(uint _projectId, uint _buildingCompletedOn, uint _saleAmount);
 	event SharesBought(address _account, uint _projectId, uint _shares);
 	event SharesRedeemed(address _account, uint _projectId, uint _shares);
+	event FeeRedeemed(address _account, uint _projectId, uint _amountRedeemed);
 	event FundraisingCompleted(uint _projectId, uint _fundraisingCompletedOn);
 
 	modifier projectExists(uint _projectId) {
@@ -107,13 +109,13 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		string memory _image,
 		uint _goalAmount,
 		uint _expectedProfit,
-		uint _builderShares,
+		uint _builderFee,
 		uint _totalShares,
 		uint _fundraisingDeadline
 	) external nonReentrant {
 		// Validate inputs
 		require(_goalAmount > 0, 'Invalid goal amount');
-		require(_builderShares > 0 && _builderShares < _totalShares, 'Invalid builder shares');
+		require(_builderFee >= 0 && _builderFee < 100, 'Invalid builder fee');
 		require(_totalShares > 1, 'Invalid total shares');
 		require(_expectedProfit >= 0, 'Invalid expected profit');
 		// NB: At least x days of deadline
@@ -127,7 +129,8 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 				goalAmount: _goalAmount,
 				saleAmount: 0,
 				expectedProfit: _expectedProfit,
-				currentShares: _builderShares,
+				builderFee: _builderFee,
+				currentShares: 0,
 				totalShares: _totalShares,
 				fundraisingDeadline: _fundraisingDeadline,
 				fundraisingCompletedOn: 0,
@@ -142,10 +145,8 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		projectToBuilder[id] = msg.sender;
 		builderProjectCount[msg.sender]++;
 
-		// Set id metadata
+		// Set project share metadata for id
 		shareContract.setMetadata(id, _name, _description, _image);
-		// Mint initial shares to builder
-		shareContract.mint(msg.sender, id, _builderShares, '');
 
 		// Emit event
 		emit ProjectCreated(
@@ -155,7 +156,7 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 			_image,
 			_goalAmount,
 			_expectedProfit,
-			_builderShares,
+			_builderFee,
 			_totalShares,
 			_fundraisingDeadline
 		);
@@ -252,6 +253,30 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		}
 	}
 
+	function redeemFee(
+		uint _projectId
+	) external projectExists(_projectId) onlyBuilder(_projectId) buildingCompleted(_projectId) nonReentrant {
+		Project storage project = projects[_projectId];
+
+		// Require that there was a profit otherwise nothing goes to the builder
+		require(project.saleAmount - project.goalAmount > 0, 'No profit no party');
+
+		// Calculate reedemable amount
+		uint amountToRedeem = ((project.saleAmount - project.goalAmount) * project.builderFee) / 100;
+		// Check that for some reasons doesn't exceed remaining one
+		require(amountToRedeem <= project.currentAmount, 'Invalid amount to redeem');
+
+		// Send amount to builder
+		(bool success, ) = msg.sender.call{value: amountToRedeem}('');
+		require(success, 'Failed to send amount');
+
+		// Update data
+		project.currentAmount -= amountToRedeem;
+
+		// Emit event
+		emit FeeRedeemed(msg.sender, _projectId, amountToRedeem);
+	}
+
 	function redeemShares(
 		uint _projectId,
 		uint _shares
@@ -302,6 +327,20 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 
 	function getShareValue(uint _projectId) public view returns (uint) {
 		Project memory project = projects[_projectId];
-		return (project.saleAmount == 0 ? project.goalAmount : project.saleAmount) / project.totalShares;
+
+		// Fundraising not finished yet
+		if (project.saleAmount == 0) {
+			return project.goalAmount / project.totalShares;
+		}
+
+		// Depending on profit for builder fee calculation
+		if (project.saleAmount - project.goalAmount > 0) {
+			// Profit
+			uint builderFeeAmount = ((project.saleAmount - project.goalAmount) * project.builderFee) / 100;
+			return (project.saleAmount - builderFeeAmount) / project.totalShares;
+		} else {
+			// No profit
+			return project.saleAmount / project.totalShares;
+		}
 	}
 }

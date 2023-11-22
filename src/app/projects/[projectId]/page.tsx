@@ -14,11 +14,11 @@ import {
 } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useContractReads, useWalletClient } from 'wagmi';
+import { getPublicClient, waitForTransaction } from 'wagmi/actions';
 import { KlaytnConstants } from '../../../constants/klaytn';
-import { TypeMapper } from '../../_utils/type-mapper';
-import { TokenUtils } from '../../_utils/token-utils';
 import { Metadata } from '../../_interfaces/metadata';
-import { getWalletClient, getPublicClient, waitForTransaction } from 'wagmi/actions';
+import { TokenUtils } from '../../_utils/token-utils';
+import { TypeMapper } from '../../_utils/type-mapper';
 
 export default function ProjectPage({ params }: { params: { projectId: number } }) {
 	const { token } = ThemeManager.useToken();
@@ -63,6 +63,11 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 									{
 										internalType: 'uint256',
 										name: 'expectedProfit',
+										type: 'uint256',
+									},
+									{
+										internalType: 'uint256',
+										name: 'builderFee',
 										type: 'uint256',
 									},
 									{

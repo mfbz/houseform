@@ -33,7 +33,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 		image: '',
 		goalAmount: 0,
 		expectedProfit: 0,
-		builderShares: 0,
+		builderFee: 0,
 		totalShares: 0,
 		fundraisingDeadline: undefined,
 	});
@@ -72,7 +72,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 					},
 					{
 						internalType: 'uint256',
-						name: '_builderShares',
+						name: '_builderFee',
 						type: 'uint256',
 					},
 					{
@@ -99,7 +99,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 			debouncedProject.image,
 			TokenUtils.toBigInt(debouncedProject.goalAmount, 18),
 			debouncedProject.expectedProfit,
-			debouncedProject.builderShares,
+			debouncedProject.builderFee,
 			debouncedProject.totalShares,
 			debouncedProject.fundraisingDeadline?.unix() || 0,
 		],
@@ -254,11 +254,11 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 								</Form.Item>
 
 								<Form.Item
-									name={'builderShares'}
+									name={'builderFee'}
 									style={{ width: '100%' }}
-									rules={[{ required: true, message: "Please input builder's shares" }]}
+									rules={[{ required: true, message: "Please input builder's fee" }]}
 								>
-									<InputNumber style={{ width: '100%' }} placeholder={'Builder shares'} />
+									<InputNumber style={{ width: '100%' }} placeholder={'Builder fee'} suffix={'%'} />
 								</Form.Item>
 
 								<Form.Item

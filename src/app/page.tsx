@@ -46,6 +46,11 @@ export default function HomePage() {
 							},
 							{
 								internalType: 'uint256',
+								name: 'builderFee',
+								type: 'uint256',
+							},
+							{
+								internalType: 'uint256',
 								name: 'currentShares',
 								type: 'uint256',
 							},
