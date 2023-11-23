@@ -542,8 +542,6 @@ export default function UserPage({ params }: { params: { address: string } }) {
 		[walletClient],
 	);
 
-	console.log(investments);
-
 	return (
 		<main>
 			<div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -561,7 +559,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 
 				<div style={{ marginTop: token.marginLG }}>
 					<Typography.Title level={4} style={{ marginTop: 0 }}>
-						{'Investments'}
+						{'Investments' + ' (' + investments.length + ')'}
 					</Typography.Title>
 
 					<div style={{ marginTop: token.margin }}>
@@ -577,7 +575,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 
 				<div style={{ marginTop: token.marginLG }}>
 					<Typography.Title level={4} style={{ marginTop: 0 }}>
-						{'Projects'}
+						{'Projects' + ' (' + builderProjects.length + ')'}
 					</Typography.Title>
 
 					<div style={{ marginTop: token.margin }}>
