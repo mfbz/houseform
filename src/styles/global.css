@@ -4,3 +4,7 @@ body {
 	min-height: 100vh;
 	margin: 0 auto;
 }
+
+.ant-list-empty-text {
+	padding: 0 !important;
+}

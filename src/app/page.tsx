@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
-import { useContractRead, useWalletClient } from 'wagmi';
+import { useAccount, useContractRead, useWalletClient } from 'wagmi';
 import { getPublicClient, getWalletClient, waitForTransaction } from 'wagmi/actions';
 import { KlaytnConstants } from '../constants/klaytn';
 import { ProjectCardGrid } from './_components/project-card-grid';
@@ -10,6 +10,10 @@ import { TypeMapper } from './_utils/type-mapper';
 import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
+	// Get connected user if any
+	const { address, isConnecting, isConnected, isDisconnected } = useAccount();
+
+	// Projects data
 	const { data, isError, isLoading } = useContractRead({
 		address: KlaytnConstants.NETWORK_DATA.contracts.HouseformManager.address as any,
 		abi: [
@@ -91,7 +95,6 @@ export default function HomePage() {
 		],
 		functionName: 'getProjects',
 	});
-
 	// Convert projects adhering interface
 	const projects = useMemo(() => {
 		if (!data) return [];
@@ -201,6 +204,7 @@ export default function HomePage() {
 			<div>
 				<ProjectCardGrid
 					projects={projects}
+					disabled={!isConnected}
 					onItemClick={onItemClick}
 					onGetMetadata={onGetMetadata}
 					onBuyShares={onBuyShares}

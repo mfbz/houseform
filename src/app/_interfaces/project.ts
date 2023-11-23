@@ -12,3 +12,5 @@ export interface Project {
 	buildingStartedOn: number;
 	buildingCompletedOn: number;
 }
+
+export type ProjectState = 'fundraising' | 'expired' | 'preparing' | 'started' | 'completed';

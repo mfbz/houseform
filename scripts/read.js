@@ -3,8 +3,8 @@ const { ethers } = require('hardhat');
 // Load env variables
 require('dotenv').config();
 
-const managerContractAddress = '0xc79838Dd48374599D179748Baeeb6564E7B9b49B';
-const shareContractAddress = '0x480a5C20F8B995A7ac7e40Fead391B08De31DfCf';
+const managerContractAddress = '0xD1E70DBF3C4666eD34e81A9375dcBbba73Da2A2a';
+const shareContractAddress = '0x7e5b21Cb4e4a6B8EA1231e9240e65ba497BD3044';
 
 async function main() {
 	const managerContract = (await ethers.getContractFactory('HouseformManager')).attach(managerContractAddress);

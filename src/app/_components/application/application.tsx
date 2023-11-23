@@ -7,8 +7,11 @@ import { HiOutlineUser, HiOutlinePlusCircle } from 'react-icons/hi';
 
 import { useAccount, useConnect } from 'wagmi';
 import { CreateButton } from './components/create-button';
+import { useRouter } from 'next/navigation';
 
 export const Application = function Application({ children }: React.PropsWithChildren) {
+	const router = useRouter();
+
 	// Antd design token
 	const { token } = ThemeManager.useToken();
 
@@ -37,8 +40,8 @@ export const Application = function Application({ children }: React.PropsWithChi
 						background: 'transparent',
 					}}
 				>
-					<div style={{ display: 'flex' }}>
-						<img src={'./houseform-logo.png'} height={32} alt={'houseform logo'}></img>
+					<div style={{ display: 'flex', cursor: 'pointer' }} onClick={() => router.push('/')}>
+						<img src={'/houseform-logo.png'} height={32} alt={'houseform logo'}></img>
 					</div>
 
 					<div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -52,7 +55,10 @@ export const Application = function Application({ children }: React.PropsWithChi
 							<>
 								<CreateButton style={{ marginRight: token.margin }} />
 
-								<Button icon={<Icon component={() => <HiOutlineUser />} />} onClick={() => console.log('pressed')}>
+								<Button
+									icon={<Icon component={() => <HiOutlineUser />} />}
+									onClick={() => router.push('/users/' + address)}
+								>
 									{''}
 								</Button>
 							</>

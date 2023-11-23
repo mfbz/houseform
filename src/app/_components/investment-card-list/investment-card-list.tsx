@@ -1,38 +1,38 @@
 'use client';
 
 import Icon from '@ant-design/icons';
-import { List, Modal, Result, Spin, theme as ThemeManager } from 'antd';
+import { Card, List, Modal, Result, Spin, theme as ThemeManager, Typography } from 'antd';
 import React, { useCallback } from 'react';
 import { HiOutlineCubeTransparent } from 'react-icons/hi';
-import { Project } from '../../_interfaces/project';
-import { ProjectCard } from './components/project-card';
+import { Investment } from '../../_interfaces/investment';
+import { InvestmentCard } from './components/investment-card';
 import { Metadata } from '../../_interfaces/metadata';
 
 const RESULT_ICON_SIZE = 64;
 
-export const ProjectCardGrid = function ProjectCardGrid({
-	projects,
+export const InvestmentCardList = function InvestmentCardList({
+	investments,
+	showActions,
 	disabled,
-	onItemClick,
 	onGetMetadata,
-	onBuyShares,
+	onRedeemShares,
 }: {
-	projects: Project[];
+	investments: Investment[];
+	showActions?: boolean;
 	disabled?: boolean;
-	onItemClick: (projectId: number) => void;
 	onGetMetadata: (projectId: number) => Promise<Metadata | null> | Metadata | null;
-	onBuyShares: (projectId: number, shares: number, amount: bigint) => Promise<void> | void;
+	onRedeemShares: (projectId: number, shares: number) => Promise<void> | void;
 }) {
 	const { token } = ThemeManager.useToken();
 
 	// To handle buy shares loading modal
 	const [loadingModal, loadingModalContextHolder] = Modal.useModal();
-	// To handle buying shares for a project
-	const onBuySharesWrapper = useCallback(
-		async (projectId: number, shares: number, amount: bigint) => {
+	// To handle buying shares for a investment
+	const onRedeemSharesWrapper = useCallback(
+		async (projectId: number, shares: number) => {
 			const instance = loadingModal.success({
 				icon: null,
-				title: 'Buying ' + shares + (shares > 1 ? ' shares ...' : ' share ...'),
+				title: 'Redeeming ' + shares + (shares > 1 ? ' shares ...' : ' share ...'),
 				content: (
 					<Result
 						icon={
@@ -56,10 +56,10 @@ export const ProjectCardGrid = function ProjectCardGrid({
 				maskClosable: false,
 			});
 
-			await onBuyShares(projectId, shares, amount);
+			await onRedeemShares(projectId, shares);
 			instance.destroy();
 		},
-		[loadingModal, token, onBuyShares],
+		[loadingModal, token, onRedeemShares],
 	);
 
 	return (
@@ -67,16 +67,22 @@ export const ProjectCardGrid = function ProjectCardGrid({
 			{loadingModalContextHolder}
 			<div style={{ display: 'flex', flexDirection: 'column' }}>
 				<List
-					grid={{ gutter: token.margin, column: 3 }}
-					dataSource={projects}
+					grid={{ gutter: token.margin, column: 1 }}
+					dataSource={investments}
+					locale={{
+						emptyText: (
+							<Card>
+								<Typography.Text type={'secondary'}>{'No data'}</Typography.Text>
+							</Card>
+						),
+					}}
 					renderItem={(item, index) => (
 						<List.Item>
-							<ProjectCard
-								id={index}
-								project={item}
-								onClick={() => onItemClick(index)}
+							<InvestmentCard
+								investment={item}
+								showActions={showActions}
 								onGetMetadata={async () => await onGetMetadata(index)}
-								onBuyShares={async (shares, amount) => await onBuySharesWrapper(index, shares, amount)}
+								onRedeemShares={async (shares) => await onRedeemSharesWrapper(index, shares)}
 								disabled={disabled}
 							/>
 						</List.Item>

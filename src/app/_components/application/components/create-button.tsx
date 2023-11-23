@@ -2,7 +2,7 @@ import Icon from '@ant-design/icons';
 import { Button, Card, DatePicker, Form, Input, InputNumber, Modal, Result, Spin, theme as ThemeManager } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-	HiCubeTransparent,
+	HiOutlineCubeTransparent,
 	HiOutlineCheckCircle,
 	HiOutlineExclamation,
 	HiOutlinePhotograph,
@@ -242,7 +242,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 									style={{ width: '100%' }}
 									rules={[{ required: true, message: 'Please input the goal amount' }]}
 								>
-									<InputNumber style={{ width: '100%' }} placeholder={'Goal amount'} />
+									<InputNumber style={{ width: '100%' }} placeholder={'Goal amount'} suffix={'KLAY'} />
 								</Form.Item>
 
 								<Form.Item
@@ -266,7 +266,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 									style={{ width: '100%' }}
 									rules={[{ required: true, message: 'Please input total shares' }]}
 								>
-									<InputNumber style={{ width: '100%' }} placeholder={'Total shares'} />
+									<InputNumber style={{ width: '100%' }} placeholder={'Total shares'} suffix={'shares'} />
 								</Form.Item>
 
 								<Form.Item
@@ -307,8 +307,8 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 							<Spin
 								indicator={
 									<Icon
-										style={{ fontSize: RESULT_ICON_SIZE }}
-										component={(props: any) => <HiCubeTransparent {...props} fill={'none'} />}
+										style={{ fontSize: RESULT_ICON_SIZE, color: token.colorPrimary }}
+										component={(props: any) => <HiOutlineCubeTransparent {...props} fill={'none'} />}
 										spin={true}
 									/>
 								}

@@ -24,10 +24,10 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 
 	// The main multitoken contract that handles shares
 	HouseformShare public shareContract;
-
+	// The list of all projects
 	Project[] public projects;
-	mapping(uint => address) public projectToBuilder;
-	mapping(address => uint) builderProjectCount;
+	// The mapping from builder to projects to easily retrieve them
+	mapping(address => uint[]) public builderToProjects;
 
 	event ProjectCreated(
 		uint _projectId,
@@ -121,7 +121,7 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		// NB: At least x days of deadline
 		require(_fundraisingDeadline >= block.timestamp + 1 days, 'Invalid fundraising deadline');
 
-		// Push new project into the array
+		// Push new project into the array saving its data in projects array storage
 		projects.push(
 			Project({
 				builder: payable(msg.sender),
@@ -140,11 +140,8 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		);
 		// Get new project id that is its index in the array
 		uint id = projects.length - 1;
-
-		// Save data
-		projectToBuilder[id] = msg.sender;
-		builderProjectCount[msg.sender]++;
-
+		// Save project for builder
+		builderToProjects[msg.sender].push(id);
 		// Set project share metadata for id
 		shareContract.setMetadata(id, _name, _description, _image);
 
@@ -313,6 +310,22 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 			projectsArray[i] = projects[i];
 		}
 		return projectsArray;
+	}
+
+	function getBuilderProjects(address _builder) external view returns (Project[] memory) {
+		Project[] memory projectsArray = new Project[](builderToProjects[_builder].length);
+		for (uint i = 0; i < builderToProjects[_builder].length; i++) {
+			projectsArray[i] = projects[builderToProjects[_builder][i]];
+		}
+		return projectsArray;
+	}
+
+	function getProjectsCount() external view returns (uint) {
+		return projects.length;
+	}
+
+	function getBuilderProjectsCount(address _builder) external view returns (uint) {
+		return builderToProjects[_builder].length;
 	}
 
 	function getProject(uint _projectId) external view returns (Project memory) {

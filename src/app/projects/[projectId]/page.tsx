@@ -1,6 +1,7 @@
 'use client';
 
 import {
+	Badge,
 	Button,
 	Card,
 	Col,
@@ -13,12 +14,13 @@ import {
 	Typography,
 } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useContractReads, useWalletClient } from 'wagmi';
+import { useAccount, useContractReads, useWalletClient } from 'wagmi';
 import { getPublicClient, waitForTransaction } from 'wagmi/actions';
 import { KlaytnConstants } from '../../../constants/klaytn';
 import { Metadata } from '../../_interfaces/metadata';
 import { TokenUtils } from '../../_utils/token-utils';
 import { TypeMapper } from '../../_utils/type-mapper';
+import { ProjectUtils } from '../../_utils/project-utils';
 
 export default function ProjectPage({ params }: { params: { projectId: number } }) {
 	const { token } = ThemeManager.useToken();
@@ -111,6 +113,7 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 					},
 				],
 				functionName: 'getProject',
+				args: [TokenUtils.toBigInt(params.projectId, 0)],
 			},
 			{
 				address: KlaytnConstants.NETWORK_DATA.contracts.HouseformShare.address as any,
@@ -144,15 +147,21 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 	// Convert project adhering interface
 	const project = useMemo(() => {
 		if (!data) return null;
-		return TypeMapper.toProject(data[0] as any);
+		return TypeMapper.toProject(data[0].result as any);
 	}, [data]);
+
+	// Get project state
+	const projectState = useMemo(() => {
+		if (!project) return null;
+		return ProjectUtils.getProjetState(project);
+	}, [project]);
 
 	// Handle metadata
 	const [metadata, setMetadata] = useState<Metadata | null>(null);
 	useEffect(() => {
 		const fetchMetadata = async () => {
 			if (!data) return;
-			const result = await fetch(data[1] as any);
+			const result = await fetch(data[1].result as any);
 			const _metadata = await result.json();
 			setMetadata(_metadata);
 		};
@@ -211,12 +220,21 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 		[walletClient],
 	);
 
+	// Calculate share cost
 	const shareCost = useMemo(() => {
 		if (!project) return null;
 		return project.goalAmount / BigInt(project.totalShares);
 	}, [project]);
 
-	if (!project || !metadata || !shareCost) return null;
+	// Get connected user if any
+	const { address, isConnecting, isConnected, isDisconnected } = useAccount();
+	// Get if connected user is builder
+	const isBuilder = useMemo(() => {
+		if (!isConnected || !address || !project) return false;
+		return project.builder === address;
+	}, [address, isConnected, project]);
+
+	if (!project || !projectState || !metadata || !shareCost) return null;
 	return (
 		<main>
 			<Row gutter={token.margin} style={{ marginTop: token.margin }}>
@@ -225,7 +243,7 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 						<Card
 							cover={
 								<div style={{ width: '100%', padding: token.margin }}>
-									<img src={metadata?.image} width={'100%'} height={300} style={{ borderRadius: token.borderRadius }} />
+									<img src={metadata?.image} width={'100%'} style={{ borderRadius: token.borderRadius }} />
 								</div>
 							}
 							bodyStyle={{ paddingTop: 0 }}
@@ -235,7 +253,7 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 									{metadata?.name}
 								</Typography.Title>
 
-								<Typography.Text style={{ height: 60, overflow: 'hidden' }}>{metadata?.description}</Typography.Text>
+								<Typography.Text style={{ overflow: 'hidden' }}>{metadata?.description}</Typography.Text>
 							</div>
 						</Card>
 					</div>
@@ -243,33 +261,37 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 
 				<Col span={8}>
 					<div style={{ display: 'flex', flexDirection: 'column' }}>
-						<Card bodyStyle={{ paddingTop: 0 }}>
+						<Card bodyStyle={{ paddingTop: 8 }}>
 							<div style={{ display: 'flex', flexDirection: 'column' }}>
-								<Row gutter={token.margin} style={{ marginTop: token.margin }}>
-									<Col span={12}>
-										<Statistic
-											title={'Available shares'}
-											value={project.totalShares - project.currentShares}
-											suffix={'/ ' + project.totalShares}
-										/>
-									</Col>
-									<Col span={12}>
-										<Statistic
-											title={'Expected profit'}
-											value={project.expectedProfit}
-											valueStyle={{ color: '#3f8600' }}
-											suffix={'%'}
-										/>
-									</Col>
-								</Row>
+								<div style={{ display: 'flex', marginTop: token.margin }}>
+									<Badge
+										text={projectState ? ProjectUtils.getProjetStateData(projectState)[0] : undefined}
+										color={projectState ? ProjectUtils.getProjetStateData(projectState)[1] : undefined}
+									/>
+								</div>
 
-								<div style={{ display: 'flex', flexDirection: 'column', marginTop: token.margin }}>
-									<Typography.Text strong={true}>
-										{TokenUtils.toNumber(project.currentAmount, 18) +
-											' / ' +
-											TokenUtils.toNumber(project.goalAmount, 18) +
-											' KLAY'}
-									</Typography.Text>
+								<Statistic
+									title={'Available shares'}
+									value={project.totalShares - project.currentShares}
+									suffix={'/ ' + project.totalShares}
+									style={{ marginTop: token.margin }}
+								/>
+
+								<Statistic
+									title={'Expected profit'}
+									value={project.expectedProfit}
+									valueStyle={{ color: '#3f8600' }}
+									suffix={'%'}
+									style={{ marginTop: token.margin }}
+								/>
+
+								<div style={{ display: 'flex', flexDirection: 'column' }}>
+									<Statistic
+										title={'Current amount'}
+										value={TokenUtils.toNumber(project.currentAmount, 18)}
+										suffix={' / ' + TokenUtils.toNumber(project.goalAmount, 18) + ' KLAY'}
+										style={{ marginTop: token.margin }}
+									/>
 
 									<Progress
 										percent={(project.currentShares / project.totalShares) * 100}
@@ -288,45 +310,44 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 										) +
 										' USD)'}
 								</Typography.Text>
+							</div>
+						</Card>
 
-								<div style={{ display: 'flex', marginTop: token.marginLG, alignItems: 'center' }}>
-									<Form
-										layout={'inline'}
-										initialValues={{ shares: 1 }}
-										style={{ width: '100%' }}
-										onFinish={(values) =>
-											onBuyShares(params.projectId, values.shares, BigInt(values.shares) * shareCost)
-										}
-									>
-										<div style={{ width: '100%', display: 'flex' }}>
-											<div style={{}}>
-												<Form.Item name={'shares'} rules={[{ required: true }]}>
-													<InputNumber
-														min={1}
-														max={project.totalShares - project.currentShares}
-														addonAfter={'Shares'}
-													/>
-												</Form.Item>
-											</div>
-
-											<div style={{ flex: 1 }}>
-												<Form.Item style={{ flex: 1, marginRight: 0 }}>
-													<Button type={'primary'} htmlType={'submit'} block={true}>
-														{'Buy'}
-													</Button>
-												</Form.Item>
-											</div>
+						<Card bodyStyle={{}} style={{ marginTop: token.margin }}>
+							<div style={{ display: 'flex', flexDirection: 'column' }}>
+								<Form
+									layout={'inline'}
+									initialValues={{ shares: 1 }}
+									style={{ width: '100%' }}
+									onFinish={(values) => onBuyShares(params.projectId, values.shares, BigInt(values.shares) * shareCost)}
+									disabled={!isConnected || projectState !== 'fundraising'}
+								>
+									<div style={{ width: '100%', display: 'flex' }}>
+										<div style={{}}>
+											<Form.Item name={'shares'} rules={[{ required: true }]}>
+												<InputNumber min={1} max={project.totalShares - project.currentShares} addonAfter={'Shares'} />
+											</Form.Item>
 										</div>
-									</Form>
-								</div>
 
-								<Typography.Text type={'secondary'}>
-									{'Fundraising ends on ' +
-										new Date(project.fundraisingDeadline * 1000).toLocaleDateString('en-us', {
-											day: 'numeric',
-											month: 'short',
-										})}
-								</Typography.Text>
+										<div style={{ flex: 1 }}>
+											<Form.Item style={{ flex: 1, marginRight: 0 }}>
+												<Button type={'primary'} htmlType={'submit'} block={true}>
+													{'Buy'}
+												</Button>
+											</Form.Item>
+										</div>
+									</div>
+								</Form>
+
+								{projectState === 'fundraising' && (
+									<Typography.Text type={'secondary'} style={{ marginTop: token.margin }}>
+										{'Fundraising ends on ' +
+											new Date(project.fundraisingDeadline * 1000).toLocaleDateString('en-us', {
+												day: 'numeric',
+												month: 'short',
+											})}
+									</Typography.Text>
+								)}
 							</div>
 						</Card>
 					</div>

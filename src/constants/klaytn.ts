@@ -20,10 +20,10 @@ export const NETWORK_DATA_MAP = {
 		},
 		contracts: {
 			HouseformManager: {
-				address: '0xc79838Dd48374599D179748Baeeb6564E7B9b49B',
+				address: '0xD1E70DBF3C4666eD34e81A9375dcBbba73Da2A2a',
 			},
 			HouseformShare: {
-				address: '0x480a5C20F8B995A7ac7e40Fead391B08De31DfCf',
+				address: '0x7e5b21Cb4e4a6B8EA1231e9240e65ba497BD3044',
 			},
 		},
 	},
