@@ -79,7 +79,7 @@ export const ProjectCard = function ProjectCard({
 
 					<Typography.Text style={{ height: 60, overflow: 'hidden' }}>{metadata?.description}</Typography.Text>
 
-					<Row gutter={token.margin} style={{ marginTop: token.margin }}>
+					<Row gutter={token.margin} style={{ height: 120, marginTop: token.margin }}>
 						<Col span={12}>
 							<Statistic
 								title={'Available shares'}
