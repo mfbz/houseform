@@ -162,7 +162,7 @@ export const BuildingCard = function BuildingCard({
 								) : projectState === 'started' ? (
 									<Form
 										layout={'inline'}
-										initialValues={{ saleAmount: project.goalAmount }}
+										initialValues={{ saleAmount: TokenUtils.toNumber(project.goalAmount, 18) }}
 										style={{ width: '100%' }}
 										onFinish={(values) => onCompleteBuilding(BigInt(values.saleAmount))}
 										disabled={disabled}
