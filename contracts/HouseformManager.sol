@@ -29,6 +29,8 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 	Project[] public projects;
 	// The mapping from builder to projects to easily retrieve them
 	mapping(address => uint[]) public builderToProjects;
+	// Used to check if builder fee has been already redeemed
+	mapping(uint => bool) public projectToFeeRedeemed;
 
 	event ProjectCreated(
 		uint _projectId,
@@ -259,6 +261,8 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 	) external projectExists(_projectId) onlyBuilder(_projectId) buildingCompleted(_projectId) nonReentrant {
 		Project storage project = projects[_projectId];
 
+		// Check fee not redeemed yet
+		require(!projectToFeeRedeemed[_projectId], 'Builder fee already redeemed');
 		// Require that there was a profit otherwise nothing goes to the builder
 		require(project.saleAmount - project.goalAmount > 0, 'No profit no party');
 
@@ -273,6 +277,8 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 
 		// Update data
 		project.currentAmount -= amountToRedeem;
+		// Save that fee has been redeemed to avoid doing it multiple times
+		projectToFeeRedeemed[_projectId] = true;
 
 		// Emit event
 		emit FeeRedeemed(msg.sender, _projectId, amountToRedeem);
