@@ -164,7 +164,7 @@ export const BuildingCard = function BuildingCard({
 										layout={'inline'}
 										initialValues={{ saleAmount: TokenUtils.toNumber(project.goalAmount, 18) }}
 										style={{ width: '100%' }}
-										onFinish={(values) => onCompleteBuilding(BigInt(values.saleAmount))}
+										onFinish={(values) => onCompleteBuilding(TokenUtils.toBigInt(values.saleAmount, 18))}
 										disabled={disabled}
 									>
 										<div style={{ width: '100%', display: 'flex' }}>
