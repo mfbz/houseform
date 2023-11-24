@@ -161,7 +161,7 @@ export const BuildingCard = function BuildingCard({
 									</Button>
 								) : projectState === 'started' ? (
 									<Form
-										layout={'vertical'}
+										layout={'inline'}
 										initialValues={{ saleAmount: project.goalAmount }}
 										style={{ width: '100%' }}
 										onFinish={(values) => onCompleteBuilding(BigInt(values.saleAmount))}
