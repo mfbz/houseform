@@ -18,7 +18,7 @@ export class ProjectUtils {
 			case 'expired':
 				return ['Expired', 'red'];
 			case 'preparing':
-				return ['Preparing', 'orange'];
+				return ['Preparing', 'pink'];
 			case 'started':
 				return ['Started', 'purple'];
 			case 'completed':
