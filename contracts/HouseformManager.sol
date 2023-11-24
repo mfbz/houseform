@@ -8,7 +8,8 @@ import './HouseformShare.sol';
 
 contract HouseformManager is Ownable, ReentrancyGuard {
 	struct Project {
-		address payable builder;
+		uint projectId;
+		address builder;
 		uint currentAmount;
 		uint goalAmount;
 		uint saleAmount; // Amount at which the project is sold
@@ -121,10 +122,14 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 		// NB: At least x days of deadline
 		require(_fundraisingDeadline >= block.timestamp + 1 days, 'Invalid fundraising deadline');
 
+		// Get new project id that is its index in the array
+		uint id = projects.length;
+
 		// Push new project into the array saving its data in projects array storage
 		projects.push(
 			Project({
-				builder: payable(msg.sender),
+				projectId: id,
+				builder: msg.sender,
 				currentAmount: 0,
 				goalAmount: _goalAmount,
 				saleAmount: 0,
@@ -138,8 +143,7 @@ contract HouseformManager is Ownable, ReentrancyGuard {
 				buildingCompletedOn: 0
 			})
 		);
-		// Get new project id that is its index in the array
-		uint id = projects.length - 1;
+
 		// Save project for builder
 		builderToProjects[msg.sender].push(id);
 		// Set project share metadata for id
