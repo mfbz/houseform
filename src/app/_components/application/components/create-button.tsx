@@ -248,7 +248,19 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 								<Form.Item
 									name={'expectedProfit'}
 									style={{ width: '100%' }}
-									rules={[{ required: true, message: 'Please input the expected profit' }]}
+									rules={[
+										{ required: true, message: 'Please input the expected profit' },
+										{
+											message: 'Only round numbers',
+											validator: (_, value) => {
+												if (/^\d+$/.test(value)) {
+													return Promise.resolve();
+												} else {
+													return Promise.reject('Only round numbers');
+												}
+											},
+										},
+									]}
 								>
 									<InputNumber style={{ width: '100%' }} placeholder={'Expected profit'} suffix={'%'} />
 								</Form.Item>
@@ -256,7 +268,19 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 								<Form.Item
 									name={'builderFee'}
 									style={{ width: '100%' }}
-									rules={[{ required: true, message: "Please input builder's fee" }]}
+									rules={[
+										{ required: true, message: "Please input builder's fee" },
+										{
+											message: 'Only round numbers',
+											validator: (_, value) => {
+												if (/^\d+$/.test(value)) {
+													return Promise.resolve();
+												} else {
+													return Promise.reject('Only round numbers');
+												}
+											},
+										},
+									]}
 								>
 									<InputNumber style={{ width: '100%' }} placeholder={'Builder fee'} suffix={'%'} />
 								</Form.Item>
@@ -264,7 +288,19 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 								<Form.Item
 									name={'totalShares'}
 									style={{ width: '100%' }}
-									rules={[{ required: true, message: 'Please input total shares' }]}
+									rules={[
+										{ required: true, message: 'Please input total shares' },
+										{
+											message: 'Only round numbers',
+											validator: (_, value) => {
+												if (/^\d+$/.test(value)) {
+													return Promise.resolve();
+												} else {
+													return Promise.reject('Only round numbers');
+												}
+											},
+										},
+									]}
 								>
 									<InputNumber style={{ width: '100%' }} placeholder={'Total shares'} suffix={'shares'} />
 								</Form.Item>
