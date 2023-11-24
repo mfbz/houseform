@@ -19,9 +19,9 @@ export const ProjectCardGrid = function ProjectCardGrid({
 }: {
 	projects: Project[];
 	disabled?: boolean;
-	onItemClick: (projectId: number) => void;
-	onGetMetadata: (projectId: number) => Promise<Metadata | null> | Metadata | null;
-	onBuyShares: (projectId: number, shares: number, amount: bigint) => Promise<void> | void;
+	onItemClick: (projectId: bigint) => void;
+	onGetMetadata: (projectId: bigint) => Promise<Metadata | null> | Metadata | null;
+	onBuyShares: (projectId: bigint, shares: number, amount: bigint) => Promise<void> | void;
 }) {
 	const { token } = ThemeManager.useToken();
 
@@ -29,7 +29,7 @@ export const ProjectCardGrid = function ProjectCardGrid({
 	const [loadingModal, loadingModalContextHolder] = Modal.useModal();
 	// To handle buying shares for a project
 	const onBuySharesWrapper = useCallback(
-		async (projectId: number, shares: number, amount: bigint) => {
+		async (projectId: bigint, shares: number, amount: bigint) => {
 			const instance = loadingModal.success({
 				icon: null,
 				title: 'Buying ' + shares + (shares > 1 ? ' shares ...' : ' share ...'),
@@ -74,9 +74,9 @@ export const ProjectCardGrid = function ProjectCardGrid({
 							<ProjectCard
 								id={index}
 								project={item}
-								onClick={() => onItemClick(index)}
-								onGetMetadata={async () => await onGetMetadata(index)}
-								onBuyShares={async (shares, amount) => await onBuySharesWrapper(index, shares, amount)}
+								onClick={() => onItemClick(item.projectId)}
+								onGetMetadata={async () => await onGetMetadata(item.projectId)}
+								onBuyShares={async (shares, amount) => await onBuySharesWrapper(item.projectId, shares, amount)}
 								disabled={disabled}
 							/>
 						</List.Item>

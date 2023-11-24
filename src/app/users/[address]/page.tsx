@@ -33,7 +33,12 @@ export default function UserPage({ params }: { params: { address: string } }) {
 					{
 						components: [
 							{
-								internalType: 'address payable',
+								internalType: 'uint256',
+								name: 'projectId',
+								type: 'uint256',
+							},
+							{
+								internalType: 'address',
 								name: 'builder',
 								type: 'address',
 							},
@@ -111,7 +116,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 	}, [projectsData]);
 
 	// Get balance of shares for project
-	const onGetBalanceOf = useCallback(async (address: string, projectId: number) => {
+	const onGetBalanceOf = useCallback(async (address: string, projectId: bigint) => {
 		try {
 			return await getPublicClient().readContract({
 				address: KlaytnConstants.NETWORK_DATA.contracts.HouseformShare.address as any,
@@ -142,7 +147,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 					},
 				],
 				functionName: 'balanceOf',
-				args: [address as any, BigInt(projectId)],
+				args: [address as any, projectId],
 			});
 		} catch (error) {
 			return null;
@@ -157,7 +162,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 			const _investments: Investment[] = [];
 			for (let i = 0; i < projects.length; i++) {
 				const project = projects[i];
-				const shares = await onGetBalanceOf(params.address, i);
+				const shares = await onGetBalanceOf(params.address, project.projectId);
 				if (shares) {
 					_investments.push({ project, shares: TokenUtils.toNumber(shares, 0) });
 				}
@@ -185,7 +190,12 @@ export default function UserPage({ params }: { params: { address: string } }) {
 					{
 						components: [
 							{
-								internalType: 'address payable',
+								internalType: 'uint256',
+								name: 'projectId',
+								type: 'uint256',
+							},
+							{
+								internalType: 'address',
 								name: 'builder',
 								type: 'address',
 							},
@@ -264,7 +274,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 	}, [builderProjectsData]);
 
 	// Get metadata from share contract uri
-	const onGetMetadata = useCallback(async (projectId: number) => {
+	const onGetMetadata = useCallback(async (projectId: bigint) => {
 		try {
 			const uri = await getPublicClient().readContract({
 				address: KlaytnConstants.NETWORK_DATA.contracts.HouseformShare.address as any,
@@ -290,7 +300,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 					},
 				],
 				functionName: 'uri',
-				args: [TokenUtils.toBigInt(projectId, 0)],
+				args: [projectId],
 			});
 
 			const result = await fetch(uri);
@@ -304,7 +314,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 	const { data: walletClient } = useWalletClient();
 	// Execute share redeem
 	const onRedeemShares = useCallback(
-		async (projectId: number, shares: number) => {
+		async (projectId: bigint, shares: number) => {
 			try {
 				// Validate it exists
 				if (!walletClient) throw new Error();
@@ -404,7 +414,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 						},
 					],
 					functionName: 'redeemShares',
-					args: [TokenUtils.toBigInt(projectId, 0), TokenUtils.toBigInt(shares, 0)],
+					args: [projectId, TokenUtils.toBigInt(shares, 0)],
 				});
 				// If we are here it means no error has been thrown so continue and execute the transaction
 				const reedemSharesHash = await walletClient.writeContract(redeemSharesRequest);
@@ -421,7 +431,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 
 	// Execute other buildings actions
 	const onStartBuilding = useCallback(
-		async (projectId: number) => {
+		async (projectId: bigint) => {
 			try {
 				// Validate it exists
 				if (!walletClient) throw new Error();
@@ -446,7 +456,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 						},
 					],
 					functionName: 'startBuilding',
-					args: [TokenUtils.toBigInt(projectId, 0)],
+					args: [projectId],
 				});
 				// If we are here it means no error has been thrown so continue and execute the transaction
 				const startBuildingHash = await walletClient.writeContract(startBuildingRequest);
@@ -461,7 +471,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 		[walletClient],
 	);
 	const onCompleteBuilding = useCallback(
-		async (projectId: number, saleAmount: bigint) => {
+		async (projectId: bigint, saleAmount: bigint) => {
 			try {
 				// Validate it exists
 				if (!walletClient) throw new Error();
@@ -486,7 +496,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 						},
 					],
 					functionName: 'completeBuilding',
-					args: [TokenUtils.toBigInt(projectId, 0)],
+					args: [projectId],
 					value: saleAmount,
 				});
 				// If we are here it means no error has been thrown so continue and execute the transaction
@@ -502,7 +512,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 		[walletClient],
 	);
 	const onRedeemFee = useCallback(
-		async (projectId: number) => {
+		async (projectId: bigint) => {
 			try {
 				// Validate it exists
 				if (!walletClient) throw new Error();
@@ -527,7 +537,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 						},
 					],
 					functionName: 'redeemFee',
-					args: [TokenUtils.toBigInt(projectId, 0)],
+					args: [projectId],
 				});
 				// If we are here it means no error has been thrown so continue and execute the transaction
 				const redeemFeeHash = await walletClient.writeContract(redeemFeeRequest);

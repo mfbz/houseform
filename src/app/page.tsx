@@ -24,7 +24,12 @@ export default function HomePage() {
 					{
 						components: [
 							{
-								internalType: 'address payable',
+								internalType: 'uint256',
+								name: 'projectId',
+								type: 'uint256',
+							},
+							{
+								internalType: 'address',
 								name: 'builder',
 								type: 'address',
 							},
@@ -105,14 +110,14 @@ export default function HomePage() {
 	const router = useRouter();
 	// Handle item click
 	const onItemClick = useCallback(
-		(projectId: number) => {
+		(projectId: bigint) => {
 			router.push('/projects/' + projectId);
 		},
 		[router],
 	);
 
 	// Get metadata from share contract uri
-	const onGetMetadata = useCallback(async (projectId: number) => {
+	const onGetMetadata = useCallback(async (projectId: bigint) => {
 		try {
 			const uri = await getPublicClient().readContract({
 				address: KlaytnConstants.NETWORK_DATA.contracts.HouseformShare.address as any,
@@ -138,7 +143,7 @@ export default function HomePage() {
 					},
 				],
 				functionName: 'uri',
-				args: [TokenUtils.toBigInt(projectId, 0)],
+				args: [projectId],
 			});
 
 			const result = await fetch(uri);
@@ -152,7 +157,7 @@ export default function HomePage() {
 	const { data: walletClient } = useWalletClient();
 	// Execute share buy
 	const onBuyShares = useCallback(
-		async (projectId: number, shares: number, amount: bigint) => {
+		async (projectId: bigint, shares: number, amount: bigint) => {
 			try {
 				// Validate it exists
 				if (!walletClient) throw new Error();
@@ -182,7 +187,7 @@ export default function HomePage() {
 						},
 					],
 					functionName: 'buyShares',
-					args: [TokenUtils.toBigInt(projectId, 0), TokenUtils.toBigInt(shares, 0)],
+					args: [projectId, TokenUtils.toBigInt(shares, 0)],
 					value: amount,
 				});
 

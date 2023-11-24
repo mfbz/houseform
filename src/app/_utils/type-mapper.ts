@@ -4,6 +4,7 @@ import { TokenUtils } from './token-utils';
 export class TypeMapper {
 	public static toProject(item: any) {
 		return {
+			projectId: item.projectId,
 			builder: item.builder,
 			currentAmount: item.currentAmount,
 			goalAmount: item.goalAmount,

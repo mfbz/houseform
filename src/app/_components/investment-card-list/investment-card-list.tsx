@@ -20,8 +20,8 @@ export const InvestmentCardList = function InvestmentCardList({
 	investments: Investment[];
 	showActions?: boolean;
 	disabled?: boolean;
-	onGetMetadata: (projectId: number) => Promise<Metadata | null> | Metadata | null;
-	onRedeemShares: (projectId: number, shares: number) => Promise<void> | void;
+	onGetMetadata: (projectId: bigint) => Promise<Metadata | null> | Metadata | null;
+	onRedeemShares: (projectId: bigint, shares: number) => Promise<void> | void;
 }) {
 	const { token } = ThemeManager.useToken();
 
@@ -29,7 +29,7 @@ export const InvestmentCardList = function InvestmentCardList({
 	const [loadingModal, loadingModalContextHolder] = Modal.useModal();
 	// To handle buying shares for a investment
 	const onRedeemSharesWrapper = useCallback(
-		async (projectId: number, shares: number) => {
+		async (projectId: bigint, shares: number) => {
 			const instance = loadingModal.success({
 				icon: null,
 				title: 'Redeeming ' + shares + (shares > 1 ? ' shares ...' : ' share ...'),
@@ -81,8 +81,8 @@ export const InvestmentCardList = function InvestmentCardList({
 							<InvestmentCard
 								investment={item}
 								showActions={showActions}
-								onGetMetadata={async () => await onGetMetadata(index)}
-								onRedeemShares={async (shares) => await onRedeemSharesWrapper(index, shares)}
+								onGetMetadata={async () => await onGetMetadata(item.project.projectId)}
+								onRedeemShares={async (shares) => await onRedeemSharesWrapper(item.project.projectId, shares)}
 								disabled={disabled}
 							/>
 						</List.Item>

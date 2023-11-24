@@ -22,10 +22,10 @@ export const BuildingCardList = function BuildingCardList({
 	projects: Project[];
 	showActions?: boolean;
 	disabled?: boolean;
-	onGetMetadata: (projectId: number) => Promise<Metadata | null> | Metadata | null;
-	onStartBuilding: (projectId: number) => Promise<void> | void;
-	onCompleteBuilding: (projectId: number, saleAmount: bigint) => Promise<void> | void;
-	onRedeemFee: (projectId: number) => Promise<void> | void;
+	onGetMetadata: (projectId: bigint) => Promise<Metadata | null> | Metadata | null;
+	onStartBuilding: (projectId: bigint) => Promise<void> | void;
+	onCompleteBuilding: (projectId: bigint, saleAmount: bigint) => Promise<void> | void;
+	onRedeemFee: (projectId: bigint) => Promise<void> | void;
 }) {
 	const { token } = ThemeManager.useToken();
 
@@ -67,19 +67,19 @@ export const BuildingCardList = function BuildingCardList({
 	);
 	// To actions
 	const _onStartBuilding = useCallback(
-		async (projectId: number) => {
+		async (projectId: bigint) => {
 			await loadingWrapper('Starting building...', async () => await onStartBuilding(projectId));
 		},
 		[loadingWrapper, onStartBuilding],
 	);
 	const _onCompleteBuilding = useCallback(
-		async (projectId: number, saleAmount: bigint) => {
+		async (projectId: bigint, saleAmount: bigint) => {
 			await loadingWrapper('Completing building...', async () => await onCompleteBuilding(projectId, saleAmount));
 		},
 		[loadingWrapper, onCompleteBuilding],
 	);
 	const _onRedeemFee = useCallback(
-		async (projectId: number) => {
+		async (projectId: bigint) => {
 			await loadingWrapper('Redeeming fee...', async () => await onRedeemFee(projectId));
 		},
 		[loadingWrapper, onRedeemFee],
@@ -104,10 +104,10 @@ export const BuildingCardList = function BuildingCardList({
 							<BuildingCard
 								project={item}
 								showActions={showActions}
-								onGetMetadata={async () => await onGetMetadata(index)}
-								onStartBuilding={async () => await _onStartBuilding(index)}
-								onCompleteBuilding={async (saleAmount) => await _onCompleteBuilding(index, saleAmount)}
-								onRedeemFee={async () => await _onRedeemFee(index)}
+								onGetMetadata={async () => await onGetMetadata(item.projectId)}
+								onStartBuilding={async () => await _onStartBuilding(item.projectId)}
+								onCompleteBuilding={async (saleAmount) => await _onCompleteBuilding(item.projectId, saleAmount)}
+								onRedeemFee={async () => await _onRedeemFee(item.projectId)}
 								disabled={disabled}
 							/>
 						</List.Item>

@@ -1,4 +1,5 @@
 export interface Project {
+	projectId: bigint;
 	builder: string;
 	currentAmount: bigint;
 	goalAmount: bigint;

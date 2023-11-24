@@ -22,8 +22,12 @@ import { TokenUtils } from '../../_utils/token-utils';
 import { TypeMapper } from '../../_utils/type-mapper';
 import { ProjectUtils } from '../../_utils/project-utils';
 
-export default function ProjectPage({ params }: { params: { projectId: number } }) {
+export default function ProjectPage({ params }: { params: { projectId: bigint } }) {
 	const { token } = ThemeManager.useToken();
+
+	const projectId = useMemo(() => {
+		return params.projectId;
+	}, [params]);
 
 	const { data, isError, isLoading } = useContractReads({
 		contracts: [
@@ -43,7 +47,12 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 							{
 								components: [
 									{
-										internalType: 'address payable',
+										internalType: 'uint256',
+										name: 'projectId',
+										type: 'uint256',
+									},
+									{
+										internalType: 'address',
 										name: 'builder',
 										type: 'address',
 									},
@@ -113,7 +122,7 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 					},
 				],
 				functionName: 'getProject',
-				args: [TokenUtils.toBigInt(params.projectId, 0)],
+				args: [projectId],
 			},
 			{
 				address: KlaytnConstants.NETWORK_DATA.contracts.HouseformShare.address as any,
@@ -139,7 +148,7 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 					},
 				],
 				functionName: 'uri',
-				args: [TokenUtils.toBigInt(params.projectId, 0)],
+				args: [projectId],
 			},
 		],
 	});
@@ -173,7 +182,7 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 	const { data: walletClient } = useWalletClient();
 	// Execute share buy
 	const onBuyShares = useCallback(
-		async (projectId: number, shares: number, amount: bigint) => {
+		async (projectId: bigint, shares: number, amount: bigint) => {
 			try {
 				// Validate it exists
 				if (!walletClient) throw new Error();
@@ -203,7 +212,7 @@ export default function ProjectPage({ params }: { params: { projectId: number } 
 						},
 					],
 					functionName: 'buyShares',
-					args: [TokenUtils.toBigInt(projectId, 0), TokenUtils.toBigInt(shares, 0)],
+					args: [projectId, TokenUtils.toBigInt(shares, 0)],
 					value: amount,
 				});
 
