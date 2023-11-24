@@ -65,7 +65,7 @@ export const InvestmentCard = function InvestmentCard({
 
 	// Calculate profit
 	const profit = useMemo(() => {
-		return TokenUtils.toNumber((shareValue - shareCost) / shareCost, 0);
+		return (Number(((shareValue - shareCost) * BigInt(100)) / shareCost) / 100) * 100;
 	}, [shareValue, shareCost]);
 
 	return (

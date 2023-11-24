@@ -64,11 +64,6 @@ export const BuildingCard = function BuildingCard({
 		}
 	}, [project]);
 
-	// Calculate profit
-	const profit = useMemo(() => {
-		return TokenUtils.toNumber((shareValue - shareCost) / shareCost, 0);
-	}, [shareValue, shareCost]);
-
 	return (
 		<Badge.Ribbon
 			text={projectState ? ProjectUtils.getProjetStateData(projectState)[0] : undefined}
