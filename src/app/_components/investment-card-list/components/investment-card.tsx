@@ -120,7 +120,7 @@ export const InvestmentCard = function InvestmentCard({
 							<Typography.Text style={{ overflow: 'hidden' }}>{metadata?.description}</Typography.Text>
 						</div>
 
-						<div style={{ display: 'flex', flexDirection: 'row' }}>
+						<div style={{ display: 'flex', flexDirection: 'row', marginTop: token.margin }}>
 							<Statistic title={'Shares'} value={investment.shares} style={{ marginRight: token.margin }} />
 
 							<Statistic

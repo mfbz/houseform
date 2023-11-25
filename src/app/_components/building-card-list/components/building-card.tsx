@@ -114,7 +114,7 @@ export const BuildingCard = function BuildingCard({
 							<Typography.Text style={{ overflow: 'hidden' }}>{metadata?.description}</Typography.Text>
 						</div>
 
-						<div style={{ display: 'flex', flexDirection: 'row' }}>
+						<div style={{ display: 'flex', flexDirection: 'row', marginTop: token.margin }}>
 							{projectState === 'fundraising' ? (
 								<Statistic
 									title={'Fundraising deadline'}
