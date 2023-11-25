@@ -175,7 +175,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 	}, [params, projects, onGetBalanceOf]);
 
 	// Builder projects data
-	const { data: builderProjectsData } = useContractRead({
+	const { data: builderProjectsData, refetch: refetchBuilderProjects } = useContractRead({
 		address: KlaytnConstants.NETWORK_DATA.contracts.HouseformManager.address as any,
 		abi: [
 			{
@@ -422,12 +422,15 @@ export default function UserPage({ params }: { params: { address: string } }) {
 				// Wait for transaction to be confirmed
 				const reedemSharesReceipt = await waitForTransaction({ hash: reedemSharesHash });
 				console.log(reedemSharesReceipt);
+
+				// Refetch projects to update data
+				await refetchProjects();
 			} catch (error) {
 				// hehe
 				console.log(error);
 			}
 		},
-		[walletClient],
+		[walletClient, refetchProjects],
 	);
 
 	// Execute other buildings actions
@@ -464,12 +467,15 @@ export default function UserPage({ params }: { params: { address: string } }) {
 				// Wait for transaction to be confirmed
 				const startBuildingReceipt = await waitForTransaction({ hash: startBuildingHash });
 				console.log(startBuildingReceipt);
+
+				// Refetch projects to update data
+				await refetchBuilderProjects();
 			} catch (error) {
 				// hehe
 				console.log(error);
 			}
 		},
-		[walletClient],
+		[walletClient, refetchBuilderProjects],
 	);
 	const onCompleteBuilding = useCallback(
 		async (projectId: bigint, saleAmount: bigint) => {
@@ -505,12 +511,15 @@ export default function UserPage({ params }: { params: { address: string } }) {
 				// Wait for transaction to be confirmed
 				const completeBuildingReceipt = await waitForTransaction({ hash: completeBuildingHash });
 				console.log(completeBuildingReceipt);
+
+				// Refetch projects to update data
+				await refetchBuilderProjects();
 			} catch (error) {
 				// hehe
 				console.log(error);
 			}
 		},
-		[walletClient],
+		[walletClient, refetchBuilderProjects],
 	);
 	const onRedeemFee = useCallback(
 		async (projectId: bigint) => {

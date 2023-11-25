@@ -14,7 +14,7 @@ export default function HomePage() {
 	const { address, isConnecting, isConnected, isDisconnected } = useAccount();
 
 	// Projects data
-	const { data, isError, isLoading } = useContractRead({
+	const { data, isError, isLoading, refetch } = useContractRead({
 		address: KlaytnConstants.NETWORK_DATA.contracts.HouseformManager.address as any,
 		abi: [
 			{
@@ -196,12 +196,15 @@ export default function HomePage() {
 				// Wait for transaction to be confirmed
 				const receipt = await waitForTransaction({ hash });
 				console.log(receipt);
+
+				// Refetch projects to update data
+				await refetch();
 			} catch (error) {
 				// hehe
 				console.log(error);
 			}
 		},
-		[walletClient],
+		[walletClient, refetch],
 	);
 
 	return (

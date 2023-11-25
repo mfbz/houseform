@@ -8,8 +8,11 @@ import {
 	Col,
 	Form,
 	InputNumber,
+	Modal,
 	Progress,
+	Result,
 	Row,
+	Spin,
 	Statistic,
 	theme as ThemeManager,
 	Typography,
@@ -23,8 +26,10 @@ import { TokenUtils } from '../../_utils/token-utils';
 import { TypeMapper } from '../../_utils/type-mapper';
 import { ProjectUtils } from '../../_utils/project-utils';
 import Icon from '@ant-design/icons';
-import { HiOutlineIdentification } from 'react-icons/hi';
+import { HiOutlineIdentification, HiOutlineCubeTransparent } from 'react-icons/hi';
 import { useRouter } from 'next/navigation';
+
+const RESULT_ICON_SIZE = 64;
 
 export default function ProjectPage({ params }: { params: { projectId: bigint } }) {
 	const router = useRouter();
@@ -34,7 +39,7 @@ export default function ProjectPage({ params }: { params: { projectId: bigint } 
 		return params.projectId;
 	}, [params]);
 
-	const { data, isError, isLoading } = useContractReads({
+	const { data, isError, isLoading, refetch } = useContractReads({
 		contracts: [
 			{
 				address: KlaytnConstants.NETWORK_DATA.contracts.HouseformManager.address as any,
@@ -183,6 +188,9 @@ export default function ProjectPage({ params }: { params: { projectId: bigint } 
 		fetchMetadata();
 	}, [data]);
 
+	// To handle buy shares loading modal
+	const [loadingModal, loadingModalContextHolder] = Modal.useModal();
+
 	// Get wallet client to do transactions
 	const { data: walletClient } = useWalletClient();
 	// Execute share buy
@@ -191,6 +199,32 @@ export default function ProjectPage({ params }: { params: { projectId: bigint } 
 			try {
 				// Validate it exists
 				if (!walletClient) throw new Error();
+
+				const instance = loadingModal.success({
+					icon: null,
+					title: 'Buying ' + shares + (shares > 1 ? ' shares ...' : ' share ...'),
+					content: (
+						<Result
+							icon={
+								<Spin
+									indicator={
+										<Icon
+											style={{ fontSize: RESULT_ICON_SIZE, color: token.colorPrimary }}
+											component={(props: any) => <HiOutlineCubeTransparent {...props} fill={'none'} />}
+											spin={true}
+										/>
+									}
+								/>
+							}
+							title={'Submitting transaction...'}
+							style={{ paddingTop: token.paddingLG, paddingBottom: token.paddingLG }}
+						/>
+					),
+					footer: null,
+					closable: false,
+					centered: true,
+					maskClosable: false,
+				});
 
 				// Execute write with simulate to validate transaction
 				const { request } = await getPublicClient().simulateContract({
@@ -226,12 +260,17 @@ export default function ProjectPage({ params }: { params: { projectId: bigint } 
 				// Wait for transaction to be confirmed
 				const receipt = await waitForTransaction({ hash });
 				console.log(receipt);
+
+				// Refetch projects to update data
+				await refetch();
+
+				instance.destroy();
 			} catch (error) {
 				// hehe
 				console.log(error);
 			}
 		},
-		[walletClient],
+		[walletClient, loadingModal, token, refetch],
 	);
 
 	// Calculate share cost
@@ -251,6 +290,7 @@ export default function ProjectPage({ params }: { params: { projectId: bigint } 
 	if (!project || !projectState || !metadata || !shareCost) return null;
 	return (
 		<main>
+			{loadingModalContextHolder}
 			<Row gutter={token.margin} style={{ marginTop: token.margin }}>
 				<Col span={16}>
 					<div style={{ display: 'flex', flexDirection: 'column' }}>
