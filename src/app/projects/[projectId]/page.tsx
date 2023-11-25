@@ -291,7 +291,7 @@ export default function ProjectPage({ params }: { params: { projectId: bigint } 
 	return (
 		<main>
 			{loadingModalContextHolder}
-			<Row gutter={token.margin} style={{ marginTop: token.margin }}>
+			<Row gutter={token.margin} style={{}}>
 				<Col span={16}>
 					<div style={{ display: 'flex', flexDirection: 'column' }}>
 						<Card
