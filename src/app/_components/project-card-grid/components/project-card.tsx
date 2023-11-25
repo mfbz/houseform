@@ -74,7 +74,7 @@ export const ProjectCard = function ProjectCard({
 			>
 				<div style={{ display: 'flex', flexDirection: 'column' }}>
 					<Typography.Title level={5} style={{ marginTop: 0 }}>
-						{metadata?.name}
+						{'#' + project.projectId + ' - ' + metadata?.name}
 					</Typography.Title>
 
 					<Typography.Text style={{ height: 60, overflow: 'hidden' }}>{metadata?.description}</Typography.Text>

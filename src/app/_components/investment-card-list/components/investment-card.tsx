@@ -82,7 +82,7 @@ export const InvestmentCard = function InvestmentCard({
 					<div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: token.paddingLG }}>
 						<div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 							<Typography.Title level={5} style={{ marginTop: 0 }}>
-								{metadata?.name}
+								{'#' + investment.project.projectId + ' - ' + metadata?.name}
 							</Typography.Title>
 
 							<Typography.Text style={{ overflow: 'hidden' }}>{metadata?.description}</Typography.Text>

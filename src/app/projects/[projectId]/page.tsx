@@ -259,7 +259,7 @@ export default function ProjectPage({ params }: { params: { projectId: bigint } 
 						>
 							<div style={{ display: 'flex', flexDirection: 'column' }}>
 								<Typography.Title level={5} style={{ marginTop: 0 }}>
-									{metadata?.name}
+									{'#' + project.projectId + ' - ' + metadata?.name}
 								</Typography.Title>
 
 								<Typography.Text style={{ overflow: 'hidden' }}>{metadata?.description}</Typography.Text>
