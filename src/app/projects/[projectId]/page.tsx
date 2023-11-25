@@ -1,6 +1,7 @@
 'use client';
 
 import {
+	Avatar,
 	Badge,
 	Button,
 	Card,
@@ -21,9 +22,12 @@ import { Metadata } from '../../_interfaces/metadata';
 import { TokenUtils } from '../../_utils/token-utils';
 import { TypeMapper } from '../../_utils/type-mapper';
 import { ProjectUtils } from '../../_utils/project-utils';
+import Icon from '@ant-design/icons';
+import { HiOutlineIdentification } from 'react-icons/hi';
 import { useRouter } from 'next/navigation';
 
 export default function ProjectPage({ params }: { params: { projectId: bigint } }) {
+	const router = useRouter();
 	const { token } = ThemeManager.useToken();
 
 	const projectId = useMemo(() => {
@@ -259,8 +263,39 @@ export default function ProjectPage({ params }: { params: { projectId: bigint } 
 							bodyStyle={{ paddingTop: 0 }}
 						>
 							<div style={{ display: 'flex', flexDirection: 'column' }}>
-								<Typography.Title level={5} style={{ marginTop: 0 }}>
-									{'#' + project.projectId + ' - ' + metadata?.name}
+								<div
+									style={{
+										display: 'flex',
+										flexDirection: 'row',
+										justifyContent: 'space-between',
+										alignItems: 'center',
+									}}
+								>
+									<div
+										style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', cursor: 'pointer' }}
+										onClick={() => router.push('/users/' + project.builder)}
+									>
+										<Avatar
+											shape={'circle'}
+											icon={
+												<Icon
+													style={{ color: token.colorText }}
+													component={(props: any) => <HiOutlineIdentification {...props} fill={'none'} />}
+												/>
+											}
+											style={{ backgroundColor: token.colorBgLayout }}
+										/>
+
+										<Typography.Text type={'secondary'} style={{ marginLeft: token.margin / 2, fontSize: '0.9em' }}>
+											{project.builder.slice(0, 4) + '...' + project.builder.slice(-4, project.builder.length)}
+										</Typography.Text>
+									</div>
+
+									<Typography.Text style={{ margin: 0, fontSize: '0.9em' }}>{'#' + project.projectId}</Typography.Text>
+								</div>
+
+								<Typography.Title level={5} style={{ marginTop: token.margin }}>
+									{metadata?.name}
 								</Typography.Title>
 
 								<Typography.Text style={{ overflow: 'hidden' }}>{metadata?.description}</Typography.Text>

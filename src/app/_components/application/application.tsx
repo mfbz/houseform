@@ -2,12 +2,11 @@
 
 import Icon from '@ant-design/icons';
 import { Button, Layout, theme as ThemeManager } from 'antd';
+import { useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
-import { HiOutlineUser, HiOutlinePlusCircle } from 'react-icons/hi';
-
+import { HiOutlineUser } from 'react-icons/hi';
 import { useAccount, useConnect } from 'wagmi';
 import { CreateButton } from './components/create-button';
-import { useRouter } from 'next/navigation';
 
 export const Application = function Application({ children }: React.PropsWithChildren) {
 	const router = useRouter();

@@ -1,12 +1,15 @@
 'use client';
 
-import { Badge, Button, Card, Form, InputNumber, Statistic, theme as ThemeManager, Typography } from 'antd';
+import { Avatar, Badge, Button, Card, Form, InputNumber, Statistic, theme as ThemeManager, Typography } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { Metadata } from '../../../_interfaces/metadata';
 import { Project } from '../../../_interfaces/project';
 import { ProjectUtils } from '../../../_utils/project-utils';
 import { TokenUtils } from '../../../_utils/token-utils';
+import Icon from '@ant-design/icons';
+import { HiOutlineIdentification } from 'react-icons/hi';
+import { useRouter } from 'next/navigation';
 
 export const BuildingCard = function BuildingCard({
 	project,
@@ -29,6 +32,7 @@ export const BuildingCard = function BuildingCard({
 }) {
 	const { address, isConnecting, isConnected, isDisconnected } = useAccount();
 
+	const router = useRouter();
 	const { token } = ThemeManager.useToken();
 
 	// Get project state
@@ -79,8 +83,32 @@ export const BuildingCard = function BuildingCard({
 
 					<div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: token.paddingLG }}>
 						<div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={5} style={{ marginTop: 0 }}>
-								{'#' + project.projectId + ' - ' + metadata?.name}
+							<div
+								style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+							>
+								<div
+									style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', cursor: 'pointer' }}
+									onClick={() => router.push('/users/' + project.builder)}
+								>
+									<Avatar
+										shape={'circle'}
+										icon={
+											<Icon
+												style={{ color: token.colorText }}
+												component={(props: any) => <HiOutlineIdentification {...props} fill={'none'} />}
+											/>
+										}
+										style={{ backgroundColor: token.colorBgLayout }}
+									/>
+
+									<Typography.Text type={'secondary'} style={{ marginLeft: token.margin / 2, fontSize: '0.9em' }}>
+										{project.builder.slice(0, 4) + '...' + project.builder.slice(-4, project.builder.length)}
+									</Typography.Text>
+								</div>
+							</div>
+
+							<Typography.Title level={5} style={{ marginTop: token.margin }}>
+								{metadata?.name}
 							</Typography.Title>
 
 							<Typography.Text style={{ overflow: 'hidden' }}>{metadata?.description}</Typography.Text>

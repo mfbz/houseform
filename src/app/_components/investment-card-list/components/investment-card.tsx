@@ -1,12 +1,15 @@
 'use client';
 
-import { Badge, Button, Card, Statistic, theme as ThemeManager, Typography } from 'antd';
+import { Badge, Button, Card, Statistic, theme as ThemeManager, Typography, Avatar } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { Investment } from '../../../_interfaces/investment';
 import { Metadata } from '../../../_interfaces/metadata';
 import { ProjectUtils } from '../../../_utils/project-utils';
 import { TokenUtils } from '../../../_utils/token-utils';
+import Icon from '@ant-design/icons';
+import { HiOutlineIdentification } from 'react-icons/hi';
+import { useRouter } from 'next/navigation';
 
 export const InvestmentCard = function InvestmentCard({
 	investment,
@@ -25,6 +28,7 @@ export const InvestmentCard = function InvestmentCard({
 }) {
 	const { address, isConnecting, isConnected, isDisconnected } = useAccount();
 
+	const router = useRouter();
 	const { token } = ThemeManager.useToken();
 
 	// Get investment state
@@ -83,8 +87,34 @@ export const InvestmentCard = function InvestmentCard({
 
 					<div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: token.paddingLG }}>
 						<div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={5} style={{ marginTop: 0 }}>
-								{'#' + investment.project.projectId + ' - ' + metadata?.name}
+							<div
+								style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+							>
+								<div
+									style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', cursor: 'pointer' }}
+									onClick={() => router.push('/users/' + investment.project.builder)}
+								>
+									<Avatar
+										shape={'circle'}
+										icon={
+											<Icon
+												style={{ color: token.colorText }}
+												component={(props: any) => <HiOutlineIdentification {...props} fill={'none'} />}
+											/>
+										}
+										style={{ backgroundColor: token.colorBgLayout }}
+									/>
+
+									<Typography.Text type={'secondary'} style={{ marginLeft: token.margin / 2, fontSize: '0.9em' }}>
+										{investment.project.builder.slice(0, 4) +
+											'...' +
+											investment.project.builder.slice(-4, investment.project.builder.length)}
+									</Typography.Text>
+								</div>
+							</div>
+
+							<Typography.Title level={5} style={{ marginTop: token.margin }}>
+								{metadata?.name}
 							</Typography.Title>
 
 							<Typography.Text style={{ overflow: 'hidden' }}>{metadata?.description}</Typography.Text>
