@@ -77,7 +77,7 @@ export const BuildingCard = function BuildingCard({
 		>
 			<Card bodyStyle={{ padding: 0 }}>
 				<div style={{ display: 'flex', flexDirection: 'row' }}>
-					<div style={{ height: '100%', padding: token.margin, cursor: 'pointer' }} onClick={onClick}>
+					<div style={{ display: 'flex', height: 'auto', padding: token.margin, cursor: 'pointer' }} onClick={onClick}>
 						<img src={metadata?.image} width={300} height={'100%'} style={{ borderRadius: token.borderRadius }} />
 					</div>
 
