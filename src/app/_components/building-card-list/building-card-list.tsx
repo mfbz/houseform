@@ -14,6 +14,7 @@ export const BuildingCardList = function BuildingCardList({
 	projects,
 	showActions,
 	disabled,
+	onItemClick,
 	onGetMetadata,
 	onStartBuilding,
 	onCompleteBuilding,
@@ -22,6 +23,7 @@ export const BuildingCardList = function BuildingCardList({
 	projects: Project[];
 	showActions?: boolean;
 	disabled?: boolean;
+	onItemClick: (projectId: bigint) => void;
 	onGetMetadata: (projectId: bigint) => Promise<Metadata | null> | Metadata | null;
 	onStartBuilding: (projectId: bigint) => Promise<void> | void;
 	onCompleteBuilding: (projectId: bigint, saleAmount: bigint) => Promise<void> | void;
@@ -104,6 +106,7 @@ export const BuildingCardList = function BuildingCardList({
 							<BuildingCard
 								project={item}
 								showActions={showActions}
+								onClick={() => onItemClick(item.projectId)}
 								onGetMetadata={async () => await onGetMetadata(item.projectId)}
 								onStartBuilding={async () => await _onStartBuilding(item.projectId)}
 								onCompleteBuilding={async (saleAmount) => await _onCompleteBuilding(item.projectId, saleAmount)}

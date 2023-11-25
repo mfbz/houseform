@@ -14,12 +14,14 @@ export const InvestmentCardList = function InvestmentCardList({
 	investments,
 	showActions,
 	disabled,
+	onItemClick,
 	onGetMetadata,
 	onRedeemShares,
 }: {
 	investments: Investment[];
 	showActions?: boolean;
 	disabled?: boolean;
+	onItemClick: (projectId: bigint) => void;
 	onGetMetadata: (projectId: bigint) => Promise<Metadata | null> | Metadata | null;
 	onRedeemShares: (projectId: bigint, shares: number) => Promise<void> | void;
 }) {
@@ -81,6 +83,7 @@ export const InvestmentCardList = function InvestmentCardList({
 							<InvestmentCard
 								investment={item}
 								showActions={showActions}
+								onClick={() => onItemClick(item.project.projectId)}
 								onGetMetadata={async () => await onGetMetadata(item.project.projectId)}
 								onRedeemShares={async (shares) => await onRedeemSharesWrapper(item.project.projectId, shares)}
 								disabled={disabled}

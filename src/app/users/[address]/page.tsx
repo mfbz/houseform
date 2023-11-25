@@ -10,6 +10,7 @@ import { Investment } from '../../_interfaces/investment';
 import { TokenUtils } from '../../_utils/token-utils';
 import { TypeMapper } from '../../_utils/type-mapper';
 import { BuildingCardList } from '../../_components/building-card-list';
+import { useRouter } from 'next/navigation';
 
 export default function UserPage({ params }: { params: { address: string } }) {
 	const { token } = ThemeManager.useToken();
@@ -552,6 +553,16 @@ export default function UserPage({ params }: { params: { address: string } }) {
 		[walletClient],
 	);
 
+	// To navigate to other pages
+	const router = useRouter();
+	// Handle item click
+	const onItemClick = useCallback(
+		(projectId: bigint) => {
+			router.push('/projects/' + projectId);
+		},
+		[router],
+	);
+
 	return (
 		<main>
 			<div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -577,6 +588,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 							investments={investments}
 							showActions={isOwner && isConnected}
 							disabled={!isConnected}
+							onItemClick={onItemClick}
 							onGetMetadata={onGetMetadata}
 							onRedeemShares={onRedeemShares}
 						/>
@@ -593,6 +605,7 @@ export default function UserPage({ params }: { params: { address: string } }) {
 							projects={builderProjects}
 							showActions={isOwner && isConnected}
 							disabled={!isConnected}
+							onItemClick={onItemClick}
 							onGetMetadata={onGetMetadata}
 							onStartBuilding={onStartBuilding}
 							onCompleteBuilding={onCompleteBuilding}

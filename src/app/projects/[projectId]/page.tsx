@@ -21,6 +21,7 @@ import { Metadata } from '../../_interfaces/metadata';
 import { TokenUtils } from '../../_utils/token-utils';
 import { TypeMapper } from '../../_utils/type-mapper';
 import { ProjectUtils } from '../../_utils/project-utils';
+import { useRouter } from 'next/navigation';
 
 export default function ProjectPage({ params }: { params: { projectId: bigint } }) {
 	const { token } = ThemeManager.useToken();

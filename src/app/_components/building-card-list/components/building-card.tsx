@@ -12,6 +12,7 @@ export const BuildingCard = function BuildingCard({
 	project,
 	showActions,
 	disabled,
+	onClick,
 	onGetMetadata,
 	onStartBuilding,
 	onCompleteBuilding,
@@ -20,6 +21,7 @@ export const BuildingCard = function BuildingCard({
 	project: Project;
 	showActions?: boolean;
 	disabled?: boolean;
+	onClick: () => void;
 	onGetMetadata: () => Promise<Metadata | null> | Metadata | null;
 	onStartBuilding: () => Promise<void> | void;
 	onCompleteBuilding: (saleAmount: bigint) => Promise<void> | void;
@@ -71,7 +73,7 @@ export const BuildingCard = function BuildingCard({
 		>
 			<Card bodyStyle={{ padding: 0 }}>
 				<div style={{ display: 'flex', flexDirection: 'row' }}>
-					<div style={{ height: '100%', padding: token.margin }}>
+					<div style={{ height: '100%', padding: token.margin, cursor: 'pointer' }} onClick={onClick}>
 						<img src={metadata?.image} width={300} height={'100%'} style={{ borderRadius: token.borderRadius }} />
 					</div>
 

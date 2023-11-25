@@ -12,12 +12,14 @@ export const InvestmentCard = function InvestmentCard({
 	investment,
 	showActions,
 	disabled,
+	onClick,
 	onGetMetadata,
 	onRedeemShares,
 }: {
 	investment: Investment;
 	showActions?: boolean;
 	disabled?: boolean;
+	onClick: () => void;
 	onGetMetadata: () => Promise<Metadata | null> | Metadata | null;
 	onRedeemShares: (shares: number) => Promise<void> | void;
 }) {
@@ -75,7 +77,7 @@ export const InvestmentCard = function InvestmentCard({
 		>
 			<Card bodyStyle={{ padding: 0 }}>
 				<div style={{ display: 'flex', flexDirection: 'row' }}>
-					<div style={{ height: '100%', padding: token.margin }}>
+					<div style={{ height: '100%', padding: token.margin, cursor: 'pointer' }} onClick={onClick}>
 						<img src={metadata?.image} width={300} height={'100%'} style={{ borderRadius: token.borderRadius }} />
 					</div>
 
