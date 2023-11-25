@@ -204,12 +204,13 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 
 								<Form.Item
 									name={'image'}
+									label={'Image URL'}
 									rules={[{ required: true, message: 'Please input an image url' }]}
 									style={{
 										marginTop: token.margin,
 									}}
 								>
-									<Input style={{ width: '100%' }} placeholder={'Image url'} />
+									<Input style={{ width: '100%' }} />
 								</Form.Item>
 							</div>
 
@@ -223,31 +224,35 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 							>
 								<Form.Item
 									name={'name'}
-									style={{ width: '100%' }}
+									label={'Name'}
+									style={{ width: '100%', marginBottom: 8 }}
 									rules={[{ required: true, message: 'Please input a name' }]}
 								>
-									<Input size={'large'} style={{ width: '100%' }} placeholder={'Name'} />
+									<Input style={{ width: '100%' }} />
 								</Form.Item>
 
 								<Form.Item
 									name={'description'}
-									style={{ width: '100%' }}
+									label={'Description'}
+									style={{ width: '100%', marginBottom: 8 }}
 									rules={[{ required: true, message: 'Please input a description' }]}
 								>
-									<Input style={{ width: '100%' }} placeholder={'Description'} />
+									<Input style={{ width: '100%' }} />
 								</Form.Item>
 
 								<Form.Item
 									name={'goalAmount'}
-									style={{ width: '100%' }}
+									label={'Goal amount'}
+									style={{ width: '100%', marginBottom: 8 }}
 									rules={[{ required: true, message: 'Please input the goal amount' }]}
 								>
-									<InputNumber style={{ width: '100%' }} placeholder={'Goal amount'} suffix={'KLAY'} />
+									<InputNumber style={{ width: '100%' }} suffix={'KLAY'} />
 								</Form.Item>
 
 								<Form.Item
 									name={'expectedProfit'}
-									style={{ width: '100%' }}
+									label={'Expected profit'}
+									style={{ width: '100%', marginBottom: 8 }}
 									rules={[
 										{ required: true, message: 'Please input the expected profit' },
 										{
@@ -262,12 +267,13 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 										},
 									]}
 								>
-									<InputNumber style={{ width: '100%' }} placeholder={'Expected profit'} suffix={'%'} />
+									<InputNumber style={{ width: '100%' }} suffix={'%'} />
 								</Form.Item>
 
 								<Form.Item
 									name={'builderFee'}
-									style={{ width: '100%' }}
+									label={'Builder fee'}
+									style={{ width: '100%', marginBottom: 8 }}
 									rules={[
 										{ required: true, message: "Please input builder's fee" },
 										{
@@ -282,12 +288,13 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 										},
 									]}
 								>
-									<InputNumber style={{ width: '100%' }} placeholder={'Builder fee'} suffix={'%'} />
+									<InputNumber style={{ width: '100%' }} suffix={'%'} />
 								</Form.Item>
 
 								<Form.Item
 									name={'totalShares'}
-									style={{ width: '100%' }}
+									label={'Total shares'}
+									style={{ width: '100%', marginBottom: 8 }}
 									rules={[
 										{ required: true, message: 'Please input total shares' },
 										{
@@ -302,17 +309,17 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 										},
 									]}
 								>
-									<InputNumber style={{ width: '100%' }} placeholder={'Total shares'} suffix={'shares'} />
+									<InputNumber style={{ width: '100%' }} suffix={'shares'} />
 								</Form.Item>
 
 								<Form.Item
 									name={'fundraisingDeadline'}
-									style={{ width: '100%' }}
+									label={'Fundraising deadline'}
+									style={{ width: '100%', marginBottom: 8 }}
 									rules={[{ required: true, message: 'Please select project fundraising deadline' }]}
 								>
 									<DatePicker
 										style={{ width: '100%' }}
-										placeholder={'Fundraising deadline'}
 										disabledDate={(d) => !d || d.unix() < Date.now() / 1000 + 1 * 24 * 60 * 60}
 									/>
 								</Form.Item>
@@ -328,7 +335,7 @@ export const CreateButton = function CreateButton({ style }: { style?: React.CSS
 						>
 							<div></div>
 
-							<Form.Item style={{ padding: 0, margin: 0 }}>
+							<Form.Item style={{ padding: 0, marginTop: 8, marginBottom: 0 }}>
 								<Button type={'primary'} htmlType={'submit'} disabled={!write}>
 									{'Create'}
 								</Button>
