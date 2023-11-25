@@ -1,5 +1,5 @@
 {
-	"name": "houseform-web-app",
+	"name": "houseform",
 	"version": "1.0.0",
 	"scripts": {
 		"web:dev": "next dev",
