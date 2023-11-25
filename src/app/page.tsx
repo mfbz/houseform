@@ -103,7 +103,9 @@ export default function HomePage() {
 	// Convert projects adhering interface
 	const projects = useMemo(() => {
 		if (!data) return [];
-		return (data as any[]).map((item: any) => TypeMapper.toProject(item));
+		return (data as any[])
+			.map((item: any) => TypeMapper.toProject(item))
+			.sort((a, b) => TokenUtils.toNumber(b.projectId - a.projectId, 0));
 	}, [data]);
 
 	// To navigate to other pages

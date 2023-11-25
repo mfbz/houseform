@@ -113,7 +113,9 @@ export default function UserPage({ params }: { params: { address: string } }) {
 	// Convert projects adhering interface
 	const projects = useMemo(() => {
 		if (!projectsData) return [];
-		return (projectsData as any[]).map((item: any) => TypeMapper.toProject(item));
+		return (projectsData as any[])
+			.map((item: any) => TypeMapper.toProject(item))
+			.sort((a, b) => TokenUtils.toNumber(b.projectId - a.projectId, 0));
 	}, [projectsData]);
 
 	// Get balance of shares for project
@@ -271,7 +273,9 @@ export default function UserPage({ params }: { params: { address: string } }) {
 	// Convert projects adhering interface
 	const builderProjects = useMemo(() => {
 		if (!builderProjectsData) return [];
-		return (builderProjectsData as any[]).map((item: any) => TypeMapper.toProject(item));
+		return (builderProjectsData as any[])
+			.map((item: any) => TypeMapper.toProject(item))
+			.sort((a, b) => TokenUtils.toNumber(b.projectId - a.projectId, 0));
 	}, [builderProjectsData]);
 
 	// Get metadata from share contract uri
