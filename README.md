@@ -1,7 +1,7 @@
 <div align="center">
   <img height="156" src="./public/houseform-icon.png" />
 
-  <h1 style="margin-top:16px;">Houseform</h1>
+  <h1 style="margin-top:8px;">Houseform</h1>
 
   <p>
     <strong>Tokenize real estate investments providing opportunities for modern ownership.</strong>
