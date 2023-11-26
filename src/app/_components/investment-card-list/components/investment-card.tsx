@@ -131,7 +131,7 @@ export const InvestmentCard = function InvestmentCard({
 								style={{ marginRight: token.margin }}
 							/>
 
-							{profit !== 0 && (
+							{projectState === 'completed' && profit > -99 && (
 								<Statistic
 									title={'Profit'}
 									value={profit}
